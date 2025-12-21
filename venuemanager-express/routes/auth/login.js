@@ -59,7 +59,7 @@ router.post('/login', async (req, res) => {
 
     // Find user by email
     const userResult = await query(
-      'SELECT id, venue_id, email, name, password_hash, role FROM app_users WHERE email = $1',
+      'SELECT id, venue_id, email, name, password_hash, role FROM app_user WHERE email = $1',
       [email.toLowerCase()]
     );
 
@@ -86,7 +86,7 @@ router.post('/login', async (req, res) => {
 
     // Update last login timestamp
     await query(
-      'UPDATE app_users SET last_login = CURRENT_TIMESTAMP WHERE id = $1',
+      'UPDATE app_user SET last_login = CURRENT_TIMESTAMP WHERE id = $1',
       [user.id]
     );
 

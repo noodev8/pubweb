@@ -5,7 +5,7 @@
 -- Dumped from database version 16.11 (Ubuntu 16.11-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-12-21 21:32:32
+-- Started on 2025-12-21 21:41:08
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -77,10 +77,10 @@ ALTER SEQUENCE public.accommodation_id_seq OWNED BY public.accommodation.id;
 
 --
 -- TOC entry 218 (class 1259 OID 23193)
--- Name: app_users; Type: TABLE; Schema: public; Owner: pubweb_user
+-- Name: app_user; Type: TABLE; Schema: public; Owner: pubweb_user
 --
 
-CREATE TABLE public.app_users (
+CREATE TABLE public.app_user (
     id integer NOT NULL,
     venue_id integer,
     email character varying(255) NOT NULL,
@@ -92,14 +92,14 @@ CREATE TABLE public.app_users (
 );
 
 
-ALTER TABLE public.app_users OWNER TO pubweb_user;
+ALTER TABLE public.app_user OWNER TO pubweb_user;
 
 --
 -- TOC entry 217 (class 1259 OID 23192)
--- Name: app_users_id_seq; Type: SEQUENCE; Schema: public; Owner: pubweb_user
+-- Name: app_user_id_seq; Type: SEQUENCE; Schema: public; Owner: pubweb_user
 --
 
-CREATE SEQUENCE public.app_users_id_seq
+CREATE SEQUENCE public.app_user_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -108,15 +108,15 @@ CREATE SEQUENCE public.app_users_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.app_users_id_seq OWNER TO pubweb_user;
+ALTER SEQUENCE public.app_user_id_seq OWNER TO pubweb_user;
 
 --
 -- TOC entry 3551 (class 0 OID 0)
 -- Dependencies: 217
--- Name: app_users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
+-- Name: app_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
 
-ALTER SEQUENCE public.app_users_id_seq OWNED BY public.app_users.id;
+ALTER SEQUENCE public.app_user_id_seq OWNED BY public.app_user.id;
 
 
 --
@@ -623,10 +623,10 @@ ALTER TABLE ONLY public.accommodation ALTER COLUMN id SET DEFAULT nextval('publi
 
 --
 -- TOC entry 3315 (class 2604 OID 23196)
--- Name: app_users id; Type: DEFAULT; Schema: public; Owner: pubweb_user
+-- Name: app_user id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
-ALTER TABLE ONLY public.app_users ALTER COLUMN id SET DEFAULT nextval('public.app_users_id_seq'::regclass);
+ALTER TABLE ONLY public.app_user ALTER COLUMN id SET DEFAULT nextval('public.app_user_id_seq'::regclass);
 
 
 --
@@ -737,20 +737,20 @@ ALTER TABLE ONLY public.accommodation
 
 --
 -- TOC entry 3348 (class 2606 OID 23204)
--- Name: app_users app_users_email_key; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
+-- Name: app_user app_user_email_key; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
-ALTER TABLE ONLY public.app_users
-    ADD CONSTRAINT app_users_email_key UNIQUE (email);
+ALTER TABLE ONLY public.app_user
+    ADD CONSTRAINT app_user_email_key UNIQUE (email);
 
 
 --
 -- TOC entry 3350 (class 2606 OID 23202)
--- Name: app_users app_users_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
+-- Name: app_user app_user_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
-ALTER TABLE ONLY public.app_users
-    ADD CONSTRAINT app_users_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.app_user
+    ADD CONSTRAINT app_user_pkey PRIMARY KEY (id);
 
 
 --
@@ -881,10 +881,10 @@ ALTER TABLE ONLY public.venues
 
 --
 -- TOC entry 3351 (class 1259 OID 23394)
--- Name: idx_app_users_email; Type: INDEX; Schema: public; Owner: pubweb_user
+-- Name: idx_app_user_email; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
-CREATE INDEX idx_app_users_email ON public.app_users USING btree (email);
+CREATE INDEX idx_app_user_email ON public.app_user USING btree (email);
 
 
 --
@@ -962,10 +962,10 @@ ALTER TABLE ONLY public.accommodation
 
 --
 -- TOC entry 3390 (class 2606 OID 23205)
--- Name: app_users app_users_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
+-- Name: app_user app_users_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
-ALTER TABLE ONLY public.app_users
+ALTER TABLE ONLY public.app_user
     ADD CONSTRAINT app_users_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id) ON DELETE CASCADE;
 
 
@@ -1075,7 +1075,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENC
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO pubweb_user;
 
 
--- Completed on 2025-12-21 21:32:34
+-- Completed on 2025-12-21 21:41:10
 
 --
 -- PostgreSQL database dump complete

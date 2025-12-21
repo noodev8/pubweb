@@ -48,7 +48,7 @@ async function verifyToken(req, res, next) {
 
     // Fetch user from database to ensure they still exist
     const userResult = await query(
-      'SELECT id, venue_id, email, name, role FROM app_users WHERE id = $1',
+      'SELECT id, venue_id, email, name, role FROM app_user WHERE id = $1',
       [decoded.userId]
     );
 
@@ -93,7 +93,7 @@ async function optionalAuth(req, res, next) {
       const decoded = jwt.verify(token, config.jwt.secret);
 
       const userResult = await query(
-        'SELECT id, venue_id, email, name, role FROM app_users WHERE id = $1',
+        'SELECT id, venue_id, email, name, role FROM app_user WHERE id = $1',
         [decoded.userId]
       );
 
