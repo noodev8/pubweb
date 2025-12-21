@@ -1,8 +1,0 @@
-pubweb
--- nagsheadgarthmyl-web
--- othervenue-web (when new venues join)
--- venuemanager-express
-docs
-.claude
-.git
-.gitignore
