@@ -1,0 +1,19 @@
+Background
+This website is the starting point of a broader hospitality platform rather than a standalone site. The immediate goal is to create a clean, modern Next.js frontend that can represent a single venue convincingly, while remaining flexible enough to evolve into a multi-venue system later. At this stage, the focus is purely on establishing a solid visual and technical foundation, not on solving content management, booking, or operational workflows.
+Over time, this frontend is expected to connect to a separate venue management system and potentially a group booking or dining product. Those systems will eventually supply venue data, menus, opening hours, and other operational content. For now, however, all data can be mocked or hard-coded, with the understanding that it will be replaced later. The intention is to avoid over-engineering early, while still keeping future integrations feasible without major refactoring.
+This project is deliberately not intended to become a traditional CMS or page builder. Instead, it should be thought of as a stable presentation layer that can sit on top of more complex systems as they are introduced. Early development should prioritise clarity, simplicity, and forward compatibility, rather than completeness or feature depth.
+
+
+Project
+This project is a self-contained Next.js web application that represents a modern hospitality website for a single venue. The purpose of V1 is to establish a clean, production-ready frontend that can later be connected to a separate venue manager and group booking system. All content may be mocked or hard-coded at this stage; there is no database, no admin UI, and no backend integration in scope for V1.
+The application should be built with the assumption that content will eventually be supplied by external services, so data access should be abstracted cleanly from presentation. The site is intentionally simple, fast, and stable, acting purely as a visual and delivery layer rather than a CMS or page builder.
+
+Tech Stack
+Framework: Next.js (App Router)
+Language: TypeScript
+Styling: Tailwind CSS (or equivalent utility-first CSS)
+Rendering: Server Components by default, minimal client-side state
+Data (V1): Local mocked data / static config
+Data (V2): External API / Venue Manager service
+Deployment: Vercel
+
