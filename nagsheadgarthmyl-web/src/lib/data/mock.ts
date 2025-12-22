@@ -373,7 +373,7 @@ export const mockMenus: Menu[] = [
 export const mockAccommodation: Accommodation = {
   description:
     'The Nags Head offers 8 beautifully appointed en-suite bedrooms, each individually designed with Laura Ashley furnishings. Awarded 5 stars by both AA and Visit Wales, our rooms provide the perfect base for exploring the stunning Welsh countryside.',
-  bookingUrl: 'https://via.eviivo.com/NagsHeadGarthmyl',
+  bookingUrl: 'https://via.eviivo.com/NagsHeadInnSY15',
   bookingEmail: 'reservations@nagsheadgarthmyl.co.uk',
   features: [
     'Free WiFi',

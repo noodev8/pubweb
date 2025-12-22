@@ -34,10 +34,10 @@ export default function AttractionsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Attractions</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl md:text-3xl font-bold">Attractions</h1>
+        <p className="text-sm md:text-base text-muted-foreground">
           Local attractions for your visitors
         </p>
       </div>
@@ -53,7 +53,7 @@ export default function AttractionsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 md:gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {attractions.map((attraction) => (
             <Card key={attraction.id}>
               <CardHeader>

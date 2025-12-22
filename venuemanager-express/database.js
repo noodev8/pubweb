@@ -26,11 +26,7 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000 // Return error after 2 seconds if connection cannot be established
 });
 
-// Log connection events
-pool.on('connect', () => {
-  console.log('Database: New client connected to pool');
-});
-
+// Log connection errors only
 pool.on('error', (err) => {
   console.error('Database: Unexpected error on idle client', err);
 });
@@ -46,9 +42,9 @@ async function query(text, params) {
   const result = await pool.query(text, params);
   const duration = Date.now() - start;
 
-  // Log slow queries (over 100ms)
-  if (duration > 100) {
-    console.log('Database: Slow query', { text, duration, rows: result.rowCount });
+  // Log slow queries (over 500ms) - only genuinely slow ones
+  if (duration > 500) {
+    console.warn('Database: Slow query', { text, duration, rows: result.rowCount });
   }
 
   return result;

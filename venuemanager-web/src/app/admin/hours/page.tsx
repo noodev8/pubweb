@@ -57,6 +57,7 @@ export default function HoursPage() {
 
   useEffect(() => {
     loadHours();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleSave = async () => {
@@ -65,7 +66,7 @@ export default function HoursPage() {
 
     const res = await updateHours(user.venue_id, hours);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Hours saved');
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
     } else {
       toast.error(res.message || 'Failed to save hours');
     }
@@ -134,11 +135,11 @@ export default function HoursPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Opening Hours</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold">Opening Hours</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Set your regular opening hours
           </p>
         </div>
@@ -155,12 +156,12 @@ export default function HoursPage() {
             Set the hours for each day of the week
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 md:space-y-6 px-3 md:px-6">
           {hours.regular.map((day, dayIndex) => (
-            <div key={day.day} className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-24 font-medium">{DAY_LABELS[day.day]}</div>
+            <div key={day.day} className="space-y-2 md:space-y-3">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="w-20 md:w-24 font-medium text-sm md:text-base">{DAY_LABELS[day.day]}</div>
                   <div className="flex items-center gap-2">
                     <Switch
                       checked={!day.isClosed}
@@ -177,13 +178,14 @@ export default function HoursPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => copyToAllDays(dayIndex)}
+                  className="self-end sm:self-auto"
                 >
                   Copy to all
                 </Button>
               </div>
 
               {!day.isClosed && (
-                <div className="ml-28 space-y-2">
+                <div className="pl-0 sm:pl-24 md:pl-28 space-y-2">
                   {(day.periods || []).map((period, periodIndex) => (
                     <div key={periodIndex} className="flex items-center gap-2">
                       <Input
@@ -192,20 +194,21 @@ export default function HoursPage() {
                         onChange={(e) =>
                           updatePeriod(dayIndex, periodIndex, 'open', e.target.value)
                         }
-                        className="w-32"
+                        className="w-24 md:w-32"
                       />
-                      <span className="text-muted-foreground">to</span>
+                      <span className="text-muted-foreground text-sm">to</span>
                       <Input
                         type="time"
                         value={period.close}
                         onChange={(e) =>
                           updatePeriod(dayIndex, periodIndex, 'close', e.target.value)
                         }
-                        className="w-32"
+                        className="w-24 md:w-32"
                       />
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="h-8 w-8"
                         onClick={() => removePeriod(dayIndex, periodIndex)}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />

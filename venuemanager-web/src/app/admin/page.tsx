@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { getVenue, getMenus, Venue, Menu } from '@/lib/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { UtensilsCrossed, Clock, Building2, BedDouble, MapPin, ArrowRight } from 'lucide-react';
 
@@ -89,15 +88,15 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">{venue?.name || 'Dashboard'}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{venue?.name || 'Dashboard'}</h1>
         {venue?.tagline && (
-          <p className="text-muted-foreground mt-1">{venue.tagline}</p>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">{venue.tagline}</p>
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 md:gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {quickLinks.map((link) => (
           <Link key={link.title} href={link.href}>
             <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
@@ -116,36 +115,6 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {menus.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Menus</CardTitle>
-            <CardDescription>Quick access to your menus</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {menus.slice(0, 5).map((menu) => (
-                <Link
-                  key={menu.id}
-                  href={`/admin/menus/${menu.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <div>
-                    <div className="font-medium">{menu.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {menu.sections.length} sections,{' '}
-                      {menu.sections.reduce((a, s) => a + s.items.length, 0)} items
-                    </div>
-                  </div>
-                  <Badge variant={menu.isActive ? 'default' : 'secondary'}>
-                    {menu.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

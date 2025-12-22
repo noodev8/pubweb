@@ -28,6 +28,7 @@ export default function VenuePage() {
 
   useEffect(() => {
     loadVenue();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleSave = async () => {
@@ -44,7 +45,7 @@ export default function VenuePage() {
     });
 
     if (res.return_code === 'SUCCESS') {
-      toast.success('Venue info saved');
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
     } else {
       toast.error(res.message || 'Failed to save venue info');
     }
@@ -61,11 +62,11 @@ export default function VenuePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Venue Info</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold">Venue Info</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Manage your venue details and contact information
           </p>
         </div>
@@ -75,7 +76,7 @@ export default function VenuePage() {
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 md:gap-6 md:grid-cols-2">
         {/* Basic Info */}
         <Card>
           <CardHeader>

@@ -1,11 +1,8 @@
 /**
  * Venue data service functions.
  *
- * V1: Returns mock data from local files
- * V2: Will fetch from Venue Manager API
- *
+ * Fetches from Venue Manager API with fallback to mock data.
  * Components call these functions and receive typed data.
- * The data source is abstracted—swap internals, not signatures.
  */
 
 import {
@@ -28,13 +25,40 @@ import {
   mockPageContent,
 } from '@/lib/data/mock'
 
+const API_URL = process.env.API_URL || 'http://localhost:3017'
+const VENUE_ID = process.env.VENUE_ID || '1'
+
+// Helper to call the API
+async function apiCall<T>(endpoint: string, body: object): Promise<T | null> {
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      next: { revalidate: 5 }, // TESTING: 5 seconds. Change to 60 for production
+    })
+    const data = await response.json()
+    if (data.return_code === 'SUCCESS') {
+      return data
+    }
+    console.error(`API error on ${endpoint}:`, data.return_code, data.message)
+    return null
+  } catch (error) {
+    console.error(`Failed to fetch ${endpoint}:`, error)
+    return null
+  }
+}
+
 // =============================================================================
 // VENUE INFO
 // =============================================================================
 
 export async function getVenueInfo(): Promise<VenueInfo> {
-  // V2: return fetch('/api/venue').then(res => res.json())
-  return mockVenueInfo
+  const data = await apiCall<{ return_code: string; venue: VenueInfo }>(
+    '/api/venue/get_venue',
+    { venue_id: parseInt(VENUE_ID) }
+  )
+  return data?.venue || mockVenueInfo
 }
 
 // =============================================================================
@@ -42,8 +66,11 @@ export async function getVenueInfo(): Promise<VenueInfo> {
 // =============================================================================
 
 export async function getOpeningHours(): Promise<OpeningHours> {
-  // V2: return fetch('/api/hours', { next: { revalidate: 86400 } }).then(...)
-  return mockOpeningHours
+  const data = await apiCall<{ return_code: string; hours: OpeningHours }>(
+    '/api/hours/get_hours',
+    { venue_id: parseInt(VENUE_ID) }
+  )
+  return data?.hours || mockOpeningHours
 }
 
 // =============================================================================
@@ -54,7 +81,13 @@ export async function getOpeningHours(): Promise<OpeningHours> {
  * Get all active menus (regular + events)
  */
 export async function getMenus(): Promise<Menu[]> {
-  // V2: return fetch('/api/menus', { next: { revalidate: 3600 } }).then(...)
+  const data = await apiCall<{ return_code: string; menus: Menu[] }>(
+    '/api/menus/get_menus',
+    { venue_id: parseInt(VENUE_ID) }
+  )
+  if (data?.menus) {
+    return data.menus.filter(menu => menu.isActive).sort((a, b) => a.sortOrder - b.sortOrder)
+  }
   return mockMenus.filter(menu => menu.isActive).sort((a, b) => a.sortOrder - b.sortOrder)
 }
 
@@ -78,9 +111,8 @@ export async function getEventMenus(): Promise<Menu[]> {
  * Get a single menu by slug
  */
 export async function getMenuBySlug(slug: string): Promise<Menu | null> {
-  // V2: return fetch(`/api/menus/${slug}`).then(...)
-  const menu = mockMenus.find(m => m.slug === slug && m.isActive)
-  return menu || null
+  const menus = await getMenus()
+  return menus.find(m => m.slug === slug) || null
 }
 
 // =============================================================================
@@ -88,9 +120,11 @@ export async function getMenuBySlug(slug: string): Promise<Menu | null> {
 // =============================================================================
 
 export async function getAccommodation(): Promise<Accommodation | null> {
-  // V2: return fetch('/api/accommodation', { next: { revalidate: 86400 } }).then(...)
-  // Returns null if venue doesn't offer accommodation
-  return mockAccommodation
+  const data = await apiCall<{ return_code: string; accommodation: Accommodation }>(
+    '/api/accommodation/get_accommodation',
+    { venue_id: parseInt(VENUE_ID) }
+  )
+  return data?.accommodation || mockAccommodation
 }
 
 // =============================================================================
@@ -98,7 +132,13 @@ export async function getAccommodation(): Promise<Accommodation | null> {
 // =============================================================================
 
 export async function getAttractions(): Promise<Attraction[]> {
-  // V2: return fetch('/api/attractions', { next: { revalidate: 86400 } }).then(...)
+  const data = await apiCall<{ return_code: string; attractions: Attraction[] }>(
+    '/api/attractions/get_attractions',
+    { venue_id: parseInt(VENUE_ID) }
+  )
+  if (data?.attractions) {
+    return data.attractions.sort((a, b) => a.sortOrder - b.sortOrder)
+  }
   return mockAttractions.sort((a, b) => a.sortOrder - b.sortOrder)
 }
 
@@ -107,7 +147,7 @@ export async function getAttractions(): Promise<Attraction[]> {
 // =============================================================================
 
 export async function getGalleryImages(category?: string): Promise<GalleryImage[]> {
-  // V2: return fetch(`/api/gallery?category=${category}`).then(...)
+  // TODO: Add gallery API endpoint
   let images = mockGallery
   if (category) {
     images = images.filter(img => img.category === category)
@@ -123,7 +163,9 @@ export async function getGalleryImages(category?: string): Promise<GalleryImage[
  * Get content for static pages (Restaurant, About, etc.)
  */
 export async function getPageContent(pageSlug: string): Promise<PageContent | null> {
-  // V2: return fetch(`/api/pages/${pageSlug}`).then(...)
-  const content = mockPageContent[pageSlug]
-  return content || null
+  const data = await apiCall<{ return_code: string; pageContent: PageContent }>(
+    '/api/pages/get_page',
+    { venue_id: parseInt(VENUE_ID), page: pageSlug }
+  )
+  return data?.pageContent || mockPageContent[pageSlug] || null
 }

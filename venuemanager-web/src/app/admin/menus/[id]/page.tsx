@@ -12,7 +12,6 @@ import {
   createItem,
   updateItem,
   deleteItem,
-  toggleItemAvailability,
   Menu,
   MenuSection,
   MenuItem,
@@ -27,28 +26,26 @@ import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
   Plus,
   Trash2,
   Save,
-  GripVertical,
-  Ban,
-  Check,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import Link from 'next/link';
+import { ImageUpload } from '@/components/admin/image-upload';
 
 export default function MenuEditPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  useAuth(); // Ensures user is authenticated
   const menuId = parseInt(params.id as string);
 
   const [menu, setMenu] = useState<Menu | null>(null);
@@ -91,6 +88,7 @@ export default function MenuEditPage() {
 
   useEffect(() => {
     loadMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuId]);
 
   const handleSaveMenu = async () => {
@@ -104,7 +102,7 @@ export default function MenuEditPage() {
     });
 
     if (res.return_code === 'SUCCESS') {
-      toast.success('Menu saved');
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
     } else {
       toast.error(res.message || 'Failed to save menu');
     }
@@ -119,7 +117,6 @@ export default function MenuEditPage() {
 
     const res = await createSection(menuId, sectionForm);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Section created');
       setSectionDialog({ open: false, mode: 'create' });
       setSectionForm({ name: '', description: '' });
       loadMenu();
@@ -133,7 +130,6 @@ export default function MenuEditPage() {
 
     const res = await updateSection(parseInt(sectionDialog.section.id), sectionForm);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Section updated');
       setSectionDialog({ open: false, mode: 'create' });
       loadMenu();
     } else {
@@ -146,7 +142,6 @@ export default function MenuEditPage() {
 
     const res = await deleteSection(parseInt(sectionId));
     if (res.return_code === 'SUCCESS') {
-      toast.success('Section deleted');
       loadMenu();
     } else {
       toast.error(res.message || 'Failed to delete section');
@@ -168,7 +163,6 @@ export default function MenuEditPage() {
     });
 
     if (res.return_code === 'SUCCESS') {
-      toast.success('Item created');
       setItemDialog({ open: false, mode: 'create' });
       setItemForm({ name: '', description: '', price: '', priceNote: '', dietaryTags: [] });
       loadMenu();
@@ -189,7 +183,6 @@ export default function MenuEditPage() {
     });
 
     if (res.return_code === 'SUCCESS') {
-      toast.success('Item updated');
       setItemDialog({ open: false, mode: 'create' });
       loadMenu();
     } else {
@@ -202,22 +195,63 @@ export default function MenuEditPage() {
 
     const res = await deleteItem(parseInt(itemId));
     if (res.return_code === 'SUCCESS') {
-      toast.success('Item deleted');
       loadMenu();
     } else {
       toast.error(res.message || 'Failed to delete item');
     }
   };
 
-  const handleToggleAvailability = async (itemId: string) => {
-    const res = await toggleItemAvailability(parseInt(itemId));
+  const handleImageUpload = async (imageUrl: string) => {
+    const res = await updateMenu(menuId, { imageUrl });
     if (res.return_code === 'SUCCESS') {
-      const isAvailable = res.isAvailable as unknown as boolean;
-      toast.success(isAvailable ? 'Item is now available' : 'Item 86\'d');
       loadMenu();
     } else {
-      toast.error(res.message || 'Failed to toggle availability');
+      toast.error(res.message || 'Failed to save image');
     }
+  };
+
+  const handleImageRemove = async () => {
+    const res = await updateMenu(menuId, { imageUrl: '' });
+    if (res.return_code === 'SUCCESS') {
+      loadMenu();
+    } else {
+      toast.error(res.message || 'Failed to remove image');
+    }
+  };
+
+  const handleMoveSection = async (sectionId: string, direction: 'up' | 'down') => {
+    if (!menu) return;
+    const sortedSections = [...menu.sections].sort((a, b) => a.sortOrder - b.sortOrder);
+    const currentIndex = sortedSections.findIndex(s => s.id === sectionId);
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    if (targetIndex < 0 || targetIndex >= sortedSections.length) return;
+
+    const currentSection = sortedSections[currentIndex];
+    const targetSection = sortedSections[targetIndex];
+
+    await updateSection(parseInt(currentSection.id), { sortOrder: targetSection.sortOrder });
+    await updateSection(parseInt(targetSection.id), { sortOrder: currentSection.sortOrder });
+    loadMenu();
+  };
+
+  const handleMoveItem = async (sectionId: string, itemId: string, direction: 'up' | 'down') => {
+    if (!menu) return;
+    const section = menu.sections.find(s => s.id === sectionId);
+    if (!section) return;
+
+    const sortedItems = [...section.items].sort((a, b) => a.sortOrder - b.sortOrder);
+    const currentIndex = sortedItems.findIndex(i => i.id === itemId);
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    if (targetIndex < 0 || targetIndex >= sortedItems.length) return;
+
+    const currentItem = sortedItems[currentIndex];
+    const targetItem = sortedItems[targetIndex];
+
+    await updateItem(parseInt(currentItem.id), { sortOrder: targetItem.sortOrder });
+    await updateItem(parseInt(targetItem.id), { sortOrder: currentItem.sortOrder });
+    loadMenu();
   };
 
   const dietaryOptions = [
@@ -239,21 +273,21 @@ export default function MenuEditPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="space-y-4">
+        <div className="flex items-start gap-3">
           <Link href="/admin/menus">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="shrink-0 mt-1">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div>
-            <h1 className="text-3xl font-bold">{menu.name}</h1>
-            <p className="text-muted-foreground">{menu.description}</p>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl md:text-3xl font-bold truncate">{menu.name}</h1>
+            <p className="text-sm md:text-base text-muted-foreground line-clamp-2">{menu.description}</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Switch
               checked={menu.isActive}
@@ -263,7 +297,7 @@ export default function MenuEditPage() {
             />
             <Label>Active</Label>
           </div>
-          <Button onClick={handleSaveMenu} disabled={isSaving}>
+          <Button onClick={handleSaveMenu} disabled={isSaving} size="sm" className="md:size-default">
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Saving...' : 'Save'}
           </Button>
@@ -297,6 +331,20 @@ export default function MenuEditPage() {
         </CardContent>
       </Card>
 
+      {/* Menu Image */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Menu Image</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ImageUpload
+            currentImageUrl={menu.imageUrl}
+            onUpload={handleImageUpload}
+            onRemove={handleImageRemove}
+          />
+        </CardContent>
+      </Card>
+
       {/* Sections */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Sections</h2>
@@ -319,20 +367,39 @@ export default function MenuEditPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {menu.sections.map((section) => (
+          {[...menu.sections].sort((a, b) => a.sortOrder - b.sortOrder).map((section, sectionIndex, sortedSections) => (
             <Card key={section.id}>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
-                    <CardTitle className="text-lg">{section.name}</CardTitle>
+              <CardHeader className="pb-2 px-3 md:px-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex flex-col shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5"
+                        onClick={() => handleMoveSection(section.id, 'up')}
+                        disabled={sectionIndex === 0}
+                      >
+                        <ChevronUp className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5"
+                        onClick={() => handleMoveSection(section.id, 'down')}
+                        disabled={sectionIndex === sortedSections.length - 1}
+                      >
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <CardTitle className="text-base md:text-lg truncate">{section.name}</CardTitle>
                     {section.description && (
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-sm text-muted-foreground truncate hidden md:inline">
                         - {section.description}
                       </span>
                     )}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 sm:gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -351,8 +418,8 @@ export default function MenuEditPage() {
                         });
                       }}
                     >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Item
+                      <Plus className="h-4 w-4 sm:mr-1" />
+                      <span className="hidden sm:inline">Item</span>
                     </Button>
                     <Button
                       variant="ghost"
@@ -381,92 +448,125 @@ export default function MenuEditPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-3 md:px-6">
                 {section.items.length === 0 ? (
                   <div className="text-sm text-muted-foreground py-2">
                     No items in this section
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {section.items.map((item) => (
+                    {[...section.items].sort((a, b) => a.sortOrder - b.sortOrder).map((item, itemIndex, sortedItems) => (
                       <div
                         key={item.id}
-                        className={`flex items-center justify-between p-3 rounded-lg border ${
+                        className={`p-2 md:p-3 rounded-lg border ${
                           !item.isAvailable ? 'bg-muted opacity-60' : ''
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
-                          <div>
-                            <div className="font-medium flex items-center gap-2">
-                              {item.name}
-                              {!item.isAvailable && (
-                                <Badge variant="destructive">86&apos;d</Badge>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-start gap-2 min-w-0 flex-1">
+                            <div className="flex flex-col shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-5 w-5"
+                                onClick={() => handleMoveItem(section.id, item.id, 'up')}
+                                disabled={itemIndex === 0}
+                              >
+                                <ChevronUp className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-5 w-5"
+                                onClick={() => handleMoveItem(section.id, item.id, 'down')}
+                                disabled={itemIndex === sortedItems.length - 1}
+                              >
+                                <ChevronDown className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium flex flex-wrap items-center gap-2">
+                                <span className="truncate">{item.name}</span>
+                                {/* Sold out badge - hidden for now, uncomment if needed
+                                {!item.isAvailable && (
+                                  <Badge variant="destructive" className="text-xs">Sold out</Badge>
+                                )}
+                                */}
+                                {item.price && (
+                                  <span className="font-medium text-sm md:hidden">
+                                    £{item.price.toFixed(2)}
+                                  </span>
+                                )}
+                              </div>
+                              {item.description && (
+                                <div className="text-sm text-muted-foreground line-clamp-2">
+                                  {item.description}
+                                </div>
+                              )}
+                              {item.dietaryTags && item.dietaryTags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {item.dietaryTags.map((tag) => (
+                                    <Badge key={tag} variant="outline" className="text-xs">
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                </div>
                               )}
                             </div>
-                            {item.description && (
-                              <div className="text-sm text-muted-foreground">
-                                {item.description}
-                              </div>
-                            )}
-                            {item.dietaryTags && item.dietaryTags.length > 0 && (
-                              <div className="flex gap-1 mt-1">
-                                {item.dietaryTags.map((tag) => (
-                                  <Badge key={tag} variant="outline" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
                           </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          {item.price && (
-                            <div className="font-medium">
-                              £{item.price.toFixed(2)}
+                          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+                            {item.price && (
+                              <div className="font-medium hidden md:block">
+                                £{item.price.toFixed(2)}
+                              </div>
+                            )}
+                            <div className="flex gap-0.5 md:gap-1">
+                              {/* Sold out toggle - hidden for now, uncomment if needed
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => handleToggleAvailability(item.id)}
+                                title={item.isAvailable ? 'Mark as sold out' : 'Mark as available'}
+                              >
+                                {item.isAvailable ? (
+                                  <Ban className="h-4 w-4" />
+                                ) : (
+                                  <Check className="h-4 w-4" />
+                                )}
+                              </Button>
+                              */}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => {
+                                  setItemForm({
+                                    name: item.name,
+                                    description: item.description || '',
+                                    price: item.price?.toString() || '',
+                                    priceNote: item.priceNote || '',
+                                    dietaryTags: item.dietaryTags || [],
+                                  });
+                                  setItemDialog({
+                                    open: true,
+                                    mode: 'edit',
+                                    sectionId: section.id,
+                                    item,
+                                  });
+                                }}
+                              >
+                                <Save className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => handleDeleteItem(item.id)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
                             </div>
-                          )}
-                          <div className="flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleToggleAvailability(item.id)}
-                              title={item.isAvailable ? '86 this item' : 'Make available'}
-                            >
-                              {item.isAvailable ? (
-                                <Ban className="h-4 w-4" />
-                              ) : (
-                                <Check className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setItemForm({
-                                  name: item.name,
-                                  description: item.description || '',
-                                  price: item.price?.toString() || '',
-                                  priceNote: item.priceNote || '',
-                                  dietaryTags: item.dietaryTags || [],
-                                });
-                                setItemDialog({
-                                  open: true,
-                                  mode: 'edit',
-                                  sectionId: section.id,
-                                  item,
-                                });
-                              }}
-                            >
-                              <Save className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteItem(item.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
                           </div>
                         </div>
                       </div>

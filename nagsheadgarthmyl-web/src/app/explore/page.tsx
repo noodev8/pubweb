@@ -55,19 +55,6 @@ export default async function ExplorePage() {
     getPageContent('explore'),
   ])
 
-  // Group attractions by category
-  const groupedAttractions = attractions.reduce(
-    (acc, attraction) => {
-      const category = attraction.category
-      if (!acc[category]) {
-        acc[category] = []
-      }
-      acc[category].push(attraction)
-      return acc
-    },
-    {} as Record<AttractionCategory, Attraction[]>
-  )
-
   return (
     <div>
       {/* Hero */}

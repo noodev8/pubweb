@@ -34,10 +34,10 @@ export default function RoomsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Rooms</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl md:text-3xl font-bold">Rooms</h1>
+        <p className="text-sm md:text-base text-muted-foreground">
           Manage your accommodation listings
         </p>
       </div>
@@ -53,7 +53,7 @@ export default function RoomsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 md:gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {accommodation.rooms.map((room) => (
             <Card key={room.id}>
               <CardHeader>

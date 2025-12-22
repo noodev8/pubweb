@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { getRegularMenus } from '@/lib/services/venue'
 import { Menu, MenuSection as MenuSectionType, DietaryTag } from '@/types'
 
@@ -95,14 +96,14 @@ function MenuSectionComponent({ section }: { section: MenuSectionType }) {
 function MenuCard({ menu }: { menu: Menu }) {
   return (
     <div className="bg-white p-8 shadow-sm">
-      <div className="mb-6">
-        <h2 className="text-3xl font-serif text-stone-900 mb-2">{menu.name}</h2>
-        {menu.description && (
-          <p className="text-stone-600">{menu.description}</p>
-        )}
-        {(menu.pdfUrl || menu.imageUrl) && (
-          <div className="mt-4 flex gap-4">
-            {menu.pdfUrl && (
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-serif text-stone-900 mb-2">{menu.name}</h2>
+          {menu.description && (
+            <p className="text-stone-600">{menu.description}</p>
+          )}
+          {menu.pdfUrl && (
+            <div className="mt-4">
               <a
                 href={menu.pdfUrl}
                 target="_blank"
@@ -111,27 +112,43 @@ function MenuCard({ menu }: { menu: Menu }) {
               >
                 Download PDF →
               </a>
-            )}
-            {menu.imageUrl && (
-              <a
-                href={menu.imageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
-              >
-                View Menu Image →
-              </a>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
+
+        {/* Menu Image Thumbnail */}
+        {menu.imageUrl && (
+          <a
+            href={menu.imageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 block group"
+          >
+            <Image
+              src={menu.imageUrl}
+              alt={`${menu.name} menu`}
+              width={128}
+              height={128}
+              className="w-32 h-32 object-cover rounded-lg shadow-sm border border-stone-200 group-hover:shadow-md transition-shadow"
+              unoptimized
+            />
+            <span className="text-xs text-stone-500 mt-1 block text-center group-hover:text-amber-600">
+              View image
+            </span>
+          </a>
         )}
       </div>
-      <div>
-        {menu.sections
-          .sort((a, b) => a.sortOrder - b.sortOrder)
-          .map((section) => (
-            <MenuSectionComponent key={section.id} section={section} />
-          ))}
-      </div>
+
+      {/* Menu sections - only show if there are items */}
+      {menu.sections.length > 0 && menu.sections.some(s => s.items.some(i => i.isAvailable)) && (
+        <div>
+          {menu.sections
+            .sort((a, b) => a.sortOrder - b.sortOrder)
+            .map((section) => (
+              <MenuSectionComponent key={section.id} section={section} />
+            ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { getMenus, createMenu, deleteMenu, Menu } from '@/lib/api';
+import { getMenus, createMenu, updateMenu, deleteMenu, Menu } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { Plus, Trash2, Edit, UtensilsCrossed } from 'lucide-react';
+import { Plus, Trash2, Edit, UtensilsCrossed, ChevronUp, ChevronDown } from 'lucide-react';
 
 export default function MenusPage() {
   const { user } = useAuth();
@@ -52,6 +52,7 @@ export default function MenusPage() {
 
   useEffect(() => {
     loadMenus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleCreateMenu = async () => {
@@ -83,6 +84,22 @@ export default function MenusPage() {
     }
   };
 
+  const handleMoveMenu = async (menuId: string, direction: 'up' | 'down') => {
+    const sortedMenus = [...menus].sort((a, b) => a.sortOrder - b.sortOrder);
+    const currentIndex = sortedMenus.findIndex(m => m.id === menuId);
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    if (targetIndex < 0 || targetIndex >= sortedMenus.length) return;
+
+    const currentMenu = sortedMenus[currentIndex];
+    const targetMenu = sortedMenus[targetIndex];
+
+    // Swap sort orders
+    await updateMenu(parseInt(currentMenu.id), { sortOrder: targetMenu.sortOrder });
+    await updateMenu(parseInt(targetMenu.id), { sortOrder: currentMenu.sortOrder });
+    loadMenus();
+  };
+
   const generateSlug = (name: string) => {
     return name
       .toLowerCase()
@@ -100,11 +117,11 @@ export default function MenusPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Menus</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold">Menus</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Manage your food and drink menus
           </p>
         </div>
@@ -204,8 +221,8 @@ export default function MenusPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {menus.map((menu) => (
+        <div className="grid gap-3 md:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[...menus].sort((a, b) => a.sortOrder - b.sortOrder).map((menu, index, arr) => (
             <Card key={menu.id} className="relative">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -218,7 +235,26 @@ export default function MenusPage() {
                     </CardTitle>
                     <CardDescription>{menu.description}</CardDescription>
                   </div>
-                  <Badge variant="outline">{menu.type}</Badge>
+                  <div className="flex flex-col">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => handleMoveMenu(menu.id, 'up')}
+                      disabled={index === 0}
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => handleMoveMenu(menu.id, 'down')}
+                      disabled={index === arr.length - 1}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
