@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getAccommodation } from '@/lib/services/venue'
 import { HeroCarousel } from '@/components/home'
+import { HexagonPattern } from '@/components/ui'
 
 export default async function HomePage() {
   const accommodation = await getAccommodation()
@@ -56,16 +57,22 @@ export default async function HomePage() {
       </section>
 
       {/* Restaurant Section */}
-      <section className="py-16 lg:py-24 bg-stone-100">
+      <section className="py-16 lg:py-24 bg-stone-100 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="relative aspect-[4/3] overflow-hidden">
-              <Image
-                src="/images/restaurant.jpg"
-                alt="The Nags Head restaurant interior"
-                fill
-                className="object-cover"
-              />
+            <div className="relative">
+              {/* Hexagon Pattern - behind image */}
+              <HexagonPattern className="absolute -left-16 -bottom-16 w-64 h-64 opacity-60 hidden md:block" />
+              <div className="relative aspect-[4/3] overflow-hidden z-10">
+                <Image
+                  src="/images/restaurant.jpg"
+                  alt="The Nags Head restaurant interior"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              {/* Hexagon Pattern - extends below */}
+              <HexagonPattern className="absolute -right-8 -bottom-12 w-48 h-48 opacity-60 hidden md:block" />
             </div>
             <div>
               <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">
@@ -93,7 +100,7 @@ export default async function HomePage() {
       </section>
 
       {/* Accommodation Section */}
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-24 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
@@ -121,13 +128,19 @@ export default async function HomePage() {
                 </a>
               )}
             </div>
-            <div className="relative aspect-[4/3] overflow-hidden order-1 md:order-2">
-              <Image
-                src="/images/bedroom.jpg"
-                alt="Luxury bedroom with Laura Ashley furnishings"
-                fill
-                className="object-cover"
-              />
+            <div className="relative order-1 md:order-2">
+              {/* Hexagon Pattern - behind image */}
+              <HexagonPattern className="absolute -right-16 -top-16 w-64 h-64 opacity-60 hidden md:block" />
+              <div className="relative aspect-[4/3] overflow-hidden z-10">
+                <Image
+                  src="/images/bedroom.jpg"
+                  alt="Luxury bedroom with Laura Ashley furnishings"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              {/* Hexagon Pattern - extends below */}
+              <HexagonPattern className="absolute -left-8 -bottom-12 w-48 h-48 opacity-60 hidden md:block" />
             </div>
           </div>
         </div>
