@@ -1,18 +1,33 @@
+import Image from 'next/image'
 import { getVenueInfo, getOpeningHours } from '@/lib/services/venue'
 
 export default async function ContactPage() {
   const [venue, hours] = await Promise.all([getVenueInfo(), getOpeningHours()])
 
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-stone-800 text-white py-16 lg:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-serif sm:text-5xl mb-4">Contact Us</h1>
-          <p className="text-stone-300 max-w-2xl mx-auto">
-            We&apos;d love to hear from you. Get in touch to make a reservation
-            or for any enquiries.
-          </p>
+    <div className="-mt-24 lg:-mt-28">
+      {/* Hero - shorter banner style */}
+      <section className="relative bg-stone-900 text-white">
+        <div className="relative h-64 sm:h-80 lg:h-96">
+          <Image
+            src="/images/hero-1.jpg"
+            alt="The Nags Head Inn at night"
+            fill
+            priority
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-stone-900/30 to-stone-900/20" />
+
+          <div className="absolute inset-0 flex items-end justify-center pb-12 sm:pb-16">
+            <div className="text-center px-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white mb-3 drop-shadow-lg">
+                Contact Us
+              </h1>
+              <p className="text-white/80 max-w-xl mx-auto">
+                We&apos;d love to hear from you
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -173,14 +188,18 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* Map Placeholder */}
-      <section className="bg-stone-200 h-96 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-stone-500 mb-2">Map placeholder</p>
-          <p className="text-sm text-stone-400">
-            {venue.address.line1}, {venue.address.town}, {venue.address.postcode}
-          </p>
-        </div>
+      {/* Map */}
+      <section className="h-96 lg:h-[500px]">
+        <iframe
+          src="https://www.google.com/maps?q=The+Nags+Head+Inn,+Garthmyl,+Montgomery,+Powys,+SY15+6RS&output=embed"
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="The Nags Head Inn location map"
+        />
       </section>
     </div>
   )

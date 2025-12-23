@@ -113,16 +113,30 @@ function MenuAccordionItem({ menu, isOpen, onToggle }: { menu: Menu; isOpen: boo
           )}
         </div>
         <div className="flex items-center gap-4 ml-4">
-          {/* Menu Image Thumbnail */}
+          {/* Menu Image Thumbnail - clickable to view full image */}
           {menu.imageUrl && (
-            <Image
-              src={menu.imageUrl}
-              alt={`${menu.name} menu`}
-              width={64}
-              height={64}
-              className="w-16 h-16 object-cover rounded border border-stone-200 hidden sm:block"
-              unoptimized
-            />
+            <a
+              href={menu.imageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="hidden sm:block relative group"
+              title="View full menu image"
+            >
+              <Image
+                src={menu.imageUrl}
+                alt={`${menu.name} menu`}
+                width={64}
+                height={64}
+                className="w-16 h-16 object-cover rounded border border-stone-200 group-hover:border-amber-400 transition-colors"
+                unoptimized
+              />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                </svg>
+              </span>
+            </a>
           )}
           {/* Chevron */}
           <svg
@@ -144,29 +158,17 @@ function MenuAccordionItem({ menu, isOpen, onToggle }: { menu: Menu; isOpen: boo
         }`}
       >
         <div className="px-6 pb-6 border-t border-stone-100">
-          {/* PDF/Image links */}
-          {(menu.pdfUrl || menu.imageUrl) && (
-            <div className="flex gap-4 mt-4 mb-6">
-              {menu.pdfUrl && (
-                <a
-                  href={menu.pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
-                >
-                  Download PDF →
-                </a>
-              )}
-              {menu.imageUrl && (
-                <a
-                  href={menu.imageUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
-                >
-                  View full image →
-                </a>
-              )}
+          {/* PDF link only (image link now on thumbnail) */}
+          {menu.pdfUrl && (
+            <div className="mt-4 mb-6">
+              <a
+                href={menu.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
+              >
+                Download PDF →
+              </a>
             </div>
           )}
 

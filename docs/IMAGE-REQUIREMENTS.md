@@ -4,13 +4,29 @@ Use this checklist when setting up a new venue website. All images should be pla
 
 ---
 
-## Homepage Images
+## Hero Images (Standard)
 
-### Hero Section (Carousel)
-| Filename | Size | Ratio | Description |
-|----------|------|-------|-------------|
-| `hero-1.jpg` | 1920 x 1080 | 16:9 | Building exterior - ideally dusk/night with lights on |
-| `hero-2.jpg` | 1920 x 1080 | 16:9 | Building exterior - daytime, good weather |
+All hero/banner images across the site use the same standard size for consistency.
+
+| Size | Ratio | Notes |
+|------|-------|-------|
+| **1920 x 1080** | **16:9** | Standard for all hero images |
+
+The site displays heroes at their native 16:9 aspect ratio - the full image is shown, not cropped. On smaller screens, the height scales proportionally with the width.
+
+### Hero Image Files
+| Filename | Description |
+|----------|-------------|
+| `hero-1.jpg` | Homepage carousel - building exterior, dusk/night with lights |
+| `hero-2.jpg` | Homepage carousel - building exterior, daytime |
+| `explore-hero.jpg` | Explore page carousel - local landscape (e.g., Lake Vyrnwy) |
+| `explore-hero-2.jpg` | Explore page carousel - second landscape (e.g., canal) |
+| `restaurant-hero.jpg` | Restaurant page - interior or signature dish |
+| `accommodation-hero.jpg` | Accommodation page - best bedroom or exterior |
+
+---
+
+## Homepage Images
 
 ### Content Sections
 | Filename | Size | Ratio | Description |
@@ -23,6 +39,12 @@ Use this checklist when setting up a new venue website. All images should be pla
 |----------|------|-------|-------------|
 | `attraction-1.jpg` | 800 x 600 | 4:3 | Local attraction #1 (e.g., castle, landmark) |
 | `attraction-2.jpg` | 800 x 600 | 4:3 | Local attraction #2 (e.g., lake, nature spot) |
+
+### Explore Page Content
+| Filename | Size | Ratio | Description |
+|----------|------|-------|--------------|
+| `explore-cycling.jpg` | 800 x 600 | 4:3 | Cycling/walking scene - canal towpath, lake path, or countryside walk |
+| `explore-castles.jpg` | 800 x 600 | 4:3 | Castle or historic building - Powis Castle with deer is ideal |
 
 ### Awards Section
 | Filename | Size | Ratio | Description |
@@ -73,7 +95,7 @@ Use this checklist when setting up a new venue website. All images should be pla
 - Compress images (TinyPNG, Squoosh) - aim for < 200KB per image
 
 ### Composition
-- Hero images: Subject should be centred or have clear space for text overlay
+- Hero images: Subject should be centred or have clear space for text overlay (bottom-left)
 - 4:3 images: Key content should be centred (edges may be cropped on mobile)
 - Avoid text in images (accessibility, doesn't scale well)
 
@@ -88,6 +110,10 @@ Use this checklist when setting up a new venue website. All images should be pla
 ```
 [ ] hero-1.jpg (1920x1080)
 [ ] hero-2.jpg (1920x1080)
+[x] explore-hero.jpg (1920x1080)
+[x] explore-hero-2.jpg (1920x1080)
+[x] explore-cycling.jpg (800x600)
+[x] explore-castles.jpg (using attraction-1.jpg) (800x600)
 [ ] restaurant.jpg (800x600)
 [ ] bedroom.jpg (800x600)
 [ ] attraction-1.jpg (800x600)

@@ -1,36 +1,37 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { getAccommodation } from '@/lib/services/venue'
 import { HeroCarousel } from '@/components/home'
 import { HexagonPattern } from '@/components/ui'
+import { siteConfig } from '@/lib/config'
 
-export default async function HomePage() {
-  const accommodation = await getAccommodation()
+export default function HomePage() {
 
   return (
     <div className="-mt-24 lg:-mt-28">
-      {/* Hero Section */}
-      <section className="relative bg-stone-900 text-white min-h-[500px] sm:min-h-[600px] lg:min-h-[700px]">
-        <HeroCarousel />
-        <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/60 via-transparent to-transparent" />
+      {/* Hero Section - 16:9 with min-height for mobile */}
+      <section className="relative bg-stone-900 text-white">
+        <div className="relative aspect-[16/9] min-h-[400px] sm:min-h-[450px]">
+          <HeroCarousel />
+          <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/60 via-transparent to-transparent" />
 
-        <div className="absolute bottom-0 left-0 right-0 pb-12 sm:pb-16 lg:pb-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="max-w-xl">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white mb-4 drop-shadow-lg">
-                The Nags Head Inn,
-                <br />
-                Garthmyl
-              </h1>
-              <Link
-                href="/restaurant"
-                className="inline-flex items-center gap-2 text-white/90 hover:text-white transition-colors group"
-              >
-                <span className="border-b border-white/50 group-hover:border-white">Find Out More</span>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
+          <div className="absolute bottom-0 left-0 right-0 pb-20 sm:pb-28 lg:pb-36">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="max-w-xl">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white mb-4 drop-shadow-lg">
+                  The Nags Head Inn,
+                  <br />
+                  Garthmyl
+                </h1>
+                <Link
+                  href="/restaurant"
+                  className="inline-flex items-center gap-2 text-white/90 hover:text-white transition-colors group"
+                >
+                  <span className="border-b border-white/50 group-hover:border-white">Find Out More</span>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -117,16 +118,14 @@ export default async function HomePage() {
                 exploring the unspoilt countryside, The Nags Head provides an ideal base for
                 your stay in Mid Wales.
               </p>
-              {accommodation?.bookingUrl && (
-                <a
-                  href={accommodation.bookingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
-                >
-                  Book Your Stay
-                </a>
-              )}
+              <a
+                href={siteConfig.bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
+              >
+                Book Your Stay
+              </a>
             </div>
             <div className="relative order-1 md:order-2">
               {/* Hexagon Pattern - behind image */}
@@ -264,16 +263,14 @@ export default async function HomePage() {
               >
                 View Menus
               </Link>
-              {accommodation?.bookingUrl && (
-                <a
-                  href={accommodation.bookingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
-                >
-                  Book a Room
-                </a>
-              )}
+              <a
+                href={siteConfig.bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
+              >
+                Book a Room
+              </a>
             </div>
           </div>
         </div>

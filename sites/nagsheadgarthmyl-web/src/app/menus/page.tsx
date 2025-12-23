@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { getRegularMenus } from '@/lib/services/venue'
 import { MenusAccordion } from './MenusAccordion'
 
@@ -5,15 +6,29 @@ export default async function MenusPage() {
   const menus = await getRegularMenus()
 
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-stone-800 text-white py-16 lg:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-serif sm:text-5xl mb-4">Our Menus</h1>
-          <p className="text-stone-300 max-w-2xl mx-auto">
-            Fresh, local, and homemade. Our AA Rosette-awarded kitchen takes
-            pride in sourcing the finest ingredients from trusted Welsh suppliers.
-          </p>
+    <div className="-mt-24 lg:-mt-28">
+      {/* Hero - 16:9 with min-height for mobile */}
+      <section className="relative bg-stone-900 text-white">
+        <div className="relative aspect-[16/9] min-h-[400px] sm:min-h-[450px]">
+          <Image
+            src="/images/restaurant-header-1920x1080.jpg"
+            alt="The Nags Head Restaurant"
+            fill
+            priority
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/70 via-stone-900/30 to-transparent" />
+
+          <div className="absolute bottom-0 left-0 right-0 pb-20 sm:pb-28 lg:pb-36">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="max-w-xl">
+                <p className="text-white/80 text-lg sm:text-xl mb-2">Menus</p>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white drop-shadow-lg">
+                  Fresh, Local, Homemade
+                </h1>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
