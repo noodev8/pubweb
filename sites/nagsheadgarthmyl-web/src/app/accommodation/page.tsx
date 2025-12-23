@@ -265,7 +265,7 @@ export default function AccommodationPage() {
                 </a>
               </p>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
               <Link
                 href="/menus"
                 className="px-6 py-3 border border-white text-white font-medium hover:bg-white hover:text-stone-900 transition-colors"

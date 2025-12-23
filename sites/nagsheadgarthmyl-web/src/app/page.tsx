@@ -256,7 +256,7 @@ export default function HomePage() {
               <p className="text-lg font-serif mb-1">Ready to visit?</p>
               <p className="text-stone-400">Call us on <a href="tel:01686640600" className="text-white hover:text-amber-400">01686 640 600</a></p>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
               <Link
                 href="/menus"
                 className="px-6 py-3 border border-white text-white font-medium hover:bg-white hover:text-stone-900 transition-colors"
