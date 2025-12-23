@@ -1,7 +1,7 @@
 {
-  "name": "venuemanager-express",
+  "name": "pubweb-express",
   "version": "1.0.0",
-  "description": "Venue Manager API - Backend for hospitality venue content management",
+  "description": "PubWeb API - Backend for hospitality venue content management",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
