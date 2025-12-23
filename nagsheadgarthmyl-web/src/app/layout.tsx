@@ -42,6 +42,7 @@ export default async function RootLayout({
           <Header
             venueName={venue.name}
             bookingUrl={accommodation?.bookingUrl}
+            transparent
           />
           <main className="flex-grow">{children}</main>
           <Footer venue={venue} hours={hours} />

@@ -1,47 +1,35 @@
 import Link from 'next/link'
-import { getVenueInfo, getAccommodation, getAttractions } from '@/lib/services/venue'
+import Image from 'next/image'
+import { getAccommodation } from '@/lib/services/venue'
+import { HeroCarousel } from '@/components/home'
 
 export default async function HomePage() {
-  const [venue, accommodation, attractions] = await Promise.all([
-    getVenueInfo(),
-    getAccommodation(),
-    getAttractions(),
-  ])
+  const accommodation = await getAccommodation()
 
   return (
-    <div>
+    <div className="-mt-24 lg:-mt-28">
       {/* Hero Section */}
-      <section className="relative bg-stone-800 text-white">
-        {/* Placeholder for hero image */}
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-900/50 to-stone-900/80" />
-        <div className="relative mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8 lg:py-48">
-          <div className="text-center">
-            <p className="text-amber-500 text-sm uppercase tracking-widest mb-4">
-              {venue.tagline}
-            </p>
-            <h1 className="text-4xl font-serif sm:text-5xl lg:text-6xl mb-6">
-              {venue.name}
-            </h1>
-            <p className="max-w-2xl mx-auto text-lg text-stone-300 mb-8">
-              {venue.description}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <section className="relative bg-stone-900 text-white min-h-[500px] sm:min-h-[600px] lg:min-h-[700px]">
+        <HeroCarousel />
+        <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/60 via-transparent to-transparent" />
+
+        <div className="absolute bottom-0 left-0 right-0 pb-12 sm:pb-16 lg:pb-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-xl">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white mb-4 drop-shadow-lg">
+                The Nags Head Inn,
+                <br />
+                Garthmyl
+              </h1>
               <Link
-                href="/menus"
-                className="inline-flex items-center justify-center px-6 py-3 bg-amber-600 text-white font-medium hover:bg-amber-700 transition-colors"
+                href="/restaurant"
+                className="inline-flex items-center gap-2 text-white/90 hover:text-white transition-colors group"
               >
-                View Our Menus
+                <span className="border-b border-white/50 group-hover:border-white">Find Out More</span>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
               </Link>
-              {accommodation?.bookingUrl && (
-                <a
-                  href={accommodation.bookingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-white text-white font-medium hover:bg-white hover:text-stone-900 transition-colors"
-                >
-                  Book a Room
-                </a>
-              )}
             </div>
           </div>
         </div>
@@ -50,135 +38,233 @@ export default async function HomePage() {
       {/* Welcome Section */}
       <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">
+              A Traditional Coaching Inn at the Heart of the Welsh Marches
+            </h2>
+            <p className="text-stone-600 text-lg mb-4">
+              The Nags Head is a Grade 2 listed former coaching inn, offering AA Rosette award-winning
+              dining and 5-star accommodation. Set in the picturesque village of Garthmyl, we combine
+              traditional hospitality with contemporary comfort.
+            </p>
+            <p className="text-stone-600 text-lg">
+              Our kitchen has held an AA Rosette for five consecutive years, while our beautifully
+              appointed bedrooms have earned 5-star ratings from both AA and Visit Wales.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Restaurant Section */}
+      <section className="py-16 lg:py-24 bg-stone-100">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="relative aspect-[4/3] overflow-hidden">
+              <Image
+                src="/images/restaurant.jpg"
+                alt="The Nags Head restaurant interior"
+                fill
+                className="object-cover"
+              />
+            </div>
             <div>
-              <h2 className="text-3xl font-serif text-stone-900 mb-6">
-                Welcome to {venue.name}
+              <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">
+                Local, Quality, Homemade Food
               </h2>
               <p className="text-stone-600 mb-4">
-                Nestled in the heart of Garthmyl, Montgomery, we are a beautiful
-                Grade 2 listed former coaching inn offering award-winning dining
-                and luxury accommodation.
+                Our restaurant features oak floors, full height ceilings with open beams,
+                oak bookshelves and beautiful foliage throughout — creating a warm and
+                inviting atmosphere for your dining experience.
               </p>
               <p className="text-stone-600 mb-6">
-                Our AA Rosette-awarded kitchen serves local, quality, homemade
-                food, while our 5-star rated bedrooms provide the perfect base
-                for exploring the stunning Welsh countryside.
+                We source fresh, local produce six days per week and grow our own herbs,
+                ensuring every dish showcases the best of Welsh ingredients prepared with
+                care and creativity.
               </p>
               <Link
-                href="/restaurant"
-                className="text-amber-600 font-medium hover:text-amber-700 transition-colors"
+                href="/menus"
+                className="inline-flex items-center px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
               >
-                Discover our restaurant →
+                View Our Menus
               </Link>
-            </div>
-            <div className="bg-stone-200 aspect-[4/3] flex items-center justify-center">
-              <span className="text-stone-400">Restaurant image placeholder</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Accommodation Teaser */}
-      {accommodation && (
-        <section className="py-16 lg:py-24 bg-stone-100">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="bg-stone-300 aspect-[4/3] flex items-center justify-center order-2 md:order-1">
-                <span className="text-stone-500">Bedroom image placeholder</span>
-              </div>
-              <div className="order-1 md:order-2">
-                <h2 className="text-3xl font-serif text-stone-900 mb-6">
-                  Stay With Us
-                </h2>
-                <p className="text-stone-600 mb-4">{accommodation.description}</p>
-                <ul className="mb-6 space-y-2">
-                  {accommodation.features.slice(0, 4).map((feature, index) => (
-                    <li key={index} className="flex items-center text-stone-600">
-                      <svg
-                        className="h-5 w-5 text-amber-600 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M4.5 12.75l6 6 9-13.5"
-                        />
-                      </svg>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+      {/* Accommodation Section */}
+      <section className="py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">
+                5★ Quality and Comfort
+              </h2>
+              <p className="text-stone-600 mb-4">
+                Our eight beautifully appointed en-suite bedrooms are designed with Laura Ashley
+                furnishings throughout, offering the perfect blend of traditional charm and
+                modern comfort.
+              </p>
+              <p className="text-stone-600 mb-6">
+                Whether you&apos;re visiting for business, shooting locally, seeing family, or
+                exploring the unspoilt countryside, The Nags Head provides an ideal base for
+                your stay in Mid Wales.
+              </p>
+              {accommodation?.bookingUrl && (
                 <a
                   href={accommodation.bookingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-amber-600 text-white font-medium hover:bg-amber-700 transition-colors"
+                  className="inline-flex items-center px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
                 >
-                  Check Availability
+                  Book Your Stay
                 </a>
-              </div>
+              )}
+            </div>
+            <div className="relative aspect-[4/3] overflow-hidden order-1 md:order-2">
+              <Image
+                src="/images/bedroom.jpg"
+                alt="Luxury bedroom with Laura Ashley furnishings"
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* Explore the Area */}
-      <section className="py-16 lg:py-24">
+      {/* Explore the Area Section */}
+      <section className="py-16 lg:py-24 bg-stone-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif text-stone-900 mb-4">
+            <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-4">
               Explore the Area
             </h2>
-            <p className="text-stone-600 max-w-2xl mx-auto">
-              The Nags Head is perfectly situated for exploring the stunning
-              Welsh countryside and historic border towns.
+            <p className="text-stone-600 max-w-2xl mx-auto text-lg">
+              Situated on the A483, The Nags Head is perfectly placed for exploring the stunning
+              Welsh countryside, with the Montgomeryshire Canal running a mere 20 yards from our door.
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {attractions.slice(0, 3).map((attraction) => (
-              <div key={attraction.id} className="bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-serif text-stone-900 mb-2">
-                  {attraction.name}
-                </h3>
-                {attraction.distance && (
-                  <p className="text-sm text-amber-600 mb-3">
-                    {attraction.distance}
-                  </p>
-                )}
-                <p className="text-stone-600 text-sm">{attraction.description}</p>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Attraction 1 - Powis Castle */}
+            <div className="relative overflow-hidden group">
+              <div className="aspect-[4/3] relative">
+                <Image
+                  src="/images/attraction-1.jpg"
+                  alt="Powis Castle with deer in foreground"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/20 to-transparent" />
               </div>
-            ))}
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <h3 className="text-2xl font-serif mb-2">Powis Castle</h3>
+                <p className="text-white/80 text-sm">
+                  A medieval castle with stunning gardens, world-famous collections
+                  and breathtaking views across the Welsh countryside.
+                </p>
+              </div>
+            </div>
+
+            {/* Attraction 2 - Lake Vyrnwy */}
+            <div className="relative overflow-hidden group">
+              <div className="aspect-[4/3] relative">
+                <Image
+                  src="/images/attraction-2.jpg"
+                  alt="Lake Vyrnwy surrounded by trees"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/20 to-transparent" />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <h3 className="text-2xl font-serif mb-2">Lake Vyrnwy</h3>
+                <p className="text-white/80 text-sm">
+                  A beautiful reservoir set in the Berwyn Mountains, perfect for walking,
+                  cycling, bird watching and water sports.
+                </p>
+              </div>
+            </div>
           </div>
           <div className="text-center mt-8">
             <Link
               href="/explore"
-              className="text-amber-600 font-medium hover:text-amber-700 transition-colors"
+              className="text-[#7A1B1B] font-medium hover:text-[#5C1414] transition-colors"
             >
-              View all attractions →
+              Discover more local attractions →
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Awards Bar */}
-      {venue.awards && venue.awards.length > 0 && (
-        <section className="py-12 bg-stone-800 text-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap justify-center gap-8 lg:gap-16">
-              {venue.awards.map((award, index) => (
-                <div key={index} className="text-center">
-                  <p className="text-amber-500 font-medium">{award.body}</p>
-                  <p className="text-sm text-stone-300">{award.rating}</p>
-                </div>
-              ))}
+      {/* Awards Section */}
+      <section className="py-16 lg:py-20 bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-serif text-stone-900 text-center mb-10">
+            Awards &amp; Accolades
+          </h2>
+          <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-12">
+            <Image
+              src="/images/award-top50.jpg"
+              alt="Top 50 Gastropubs"
+              width={100}
+              height={100}
+              className="h-20 w-auto"
+            />
+            <Image
+              src="/images/award-aa-inn.jpg"
+              alt="AA 5 Star Inn 2022"
+              width={100}
+              height={100}
+              className="h-20 w-auto"
+            />
+            <Image
+              src="/images/award-aa-rosette.jpg"
+              alt="AA Rosette Award for Culinary Excellence 2022"
+              width={100}
+              height={100}
+              className="h-20 w-auto"
+            />
+            <Image
+              src="/images/award-aa-breakfast.jpg"
+              alt="AA Breakfast Award 2022"
+              width={100}
+              height={100}
+              className="h-20 w-auto"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Bar */}
+      <section className="py-12 bg-stone-800 text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-center md:text-left">
+              <p className="text-lg font-serif mb-1">Ready to visit?</p>
+              <p className="text-stone-400">Call us on <a href="tel:01686640600" className="text-white hover:text-amber-400">01686 640 600</a></p>
+            </div>
+            <div className="flex gap-4">
+              <Link
+                href="/menus"
+                className="px-6 py-3 border border-white text-white font-medium hover:bg-white hover:text-stone-900 transition-colors"
+              >
+                View Menus
+              </Link>
+              {accommodation?.bookingUrl && (
+                <a
+                  href={accommodation.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
+                >
+                  Book a Room
+                </a>
+              )}
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
     </div>
   )
 }

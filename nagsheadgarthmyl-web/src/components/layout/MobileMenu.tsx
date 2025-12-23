@@ -29,7 +29,7 @@ export function MobileMenu({ venueName, bookingUrl }: MobileMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="md:hidden p-2 text-stone-300 hover:text-white transition-colors"
+        className="lg:hidden p-2 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] hover:text-white/80 transition-colors"
         aria-label="Open menu"
       >
         <svg
@@ -50,7 +50,7 @@ export function MobileMenu({ venueName, bookingUrl }: MobileMenuProps) {
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
@@ -58,7 +58,7 @@ export function MobileMenu({ venueName, bookingUrl }: MobileMenuProps) {
 
       {/* Slide-out Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-72 bg-stone-900 z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 right-0 h-full w-72 bg-stone-900 z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -118,7 +118,7 @@ export function MobileMenu({ venueName, bookingUrl }: MobileMenuProps) {
               href={bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full py-3 text-center bg-amber-600 text-white font-medium hover:bg-amber-700 transition-colors"
+              className="block w-full py-3 text-center bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
             >
               Book a Room
             </a>

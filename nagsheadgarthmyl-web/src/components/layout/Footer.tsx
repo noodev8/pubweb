@@ -116,22 +116,20 @@ export function Footer({ venue, hours }: FooterProps) {
           </div>
         </div>
 
-        {/* Awards */}
-        {venue.awards && venue.awards.length > 0 && (
-          <div className="mt-8 pt-8 border-t border-stone-700">
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              {venue.awards.map((award, index) => (
-                <span key={index} className="text-amber-500">
-                  {award.body} {award.rating}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-stone-700 text-center text-sm">
           <p>&copy; {currentYear} {venue.name}. All rights reserved.</p>
+          <p className="mt-2 text-stone-500">
+            Website by{' '}
+            <a
+              href="https://noodev8.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Noodev8
+            </a>
+          </p>
         </div>
       </div>
     </footer>
