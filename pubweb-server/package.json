@@ -1,5 +1,5 @@
 {
-  "name": "pubweb-express",
+  "name": "pubweb-server",
   "version": "1.0.0",
   "description": "PubWeb API - Backend for hospitality venue content management",
   "main": "server.js",
