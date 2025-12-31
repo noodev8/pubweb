@@ -44,20 +44,15 @@ const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
 const { withTransaction } = require('../../utils/transaction');
-const { createRouteLogger } = require('../../utils/apiLogger');
 
-const logger = createRouteLogger('update_page');
 
 router.post('/update_page', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { venue_id, page, title, subtitle, sections } = req.body;
 
     // Validate required fields
     if (!venue_id || !page) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'venue_id and page are required'
@@ -66,7 +61,6 @@ router.post('/update_page', verifyToken, async (req, res) => {
 
     // Check user has access
     if (req.user.venue_id !== venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this venue'
@@ -76,7 +70,6 @@ router.post('/update_page', verifyToken, async (req, res) => {
     // Check venue exists
     const venueCheck = await query('SELECT id FROM venues WHERE id = $1', [venue_id]);
     if (venueCheck.rows.length === 0) {
-      logger.response('VENUE_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'VENUE_NOT_FOUND',
         message: 'Venue not found'
@@ -152,14 +145,13 @@ router.post('/update_page', verifyToken, async (req, res) => {
       }
     });
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       message: 'Page updated successfully'
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('update_page error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while updating page'

@@ -44,20 +44,15 @@ Return Codes:
 const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
-const { createRouteLogger } = require('../../utils/apiLogger');
 
-const logger = createRouteLogger('get_page');
 
 router.post('/get_page', async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { venue_id, page } = req.body;
 
     // Validate required fields
     if (!venue_id || !page) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'venue_id and page are required'
@@ -67,7 +62,6 @@ router.post('/get_page', async (req, res) => {
     // Check venue exists
     const venueCheck = await query('SELECT id FROM venues WHERE id = $1', [venue_id]);
     if (venueCheck.rows.length === 0) {
-      logger.response('VENUE_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'VENUE_NOT_FOUND',
         message: 'Venue not found'
@@ -82,7 +76,6 @@ router.post('/get_page', async (req, res) => {
     );
 
     if (pageResult.rows.length === 0) {
-      logger.response('PAGE_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'PAGE_NOT_FOUND',
         message: 'Page content not found'
@@ -114,14 +107,13 @@ router.post('/get_page', async (req, res) => {
       }))
     };
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       pageContent
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('get_page error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while fetching page'

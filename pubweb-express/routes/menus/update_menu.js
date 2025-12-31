@@ -43,13 +43,8 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('update_menu');
 
 router.post('/update_menu', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const {
@@ -59,7 +54,6 @@ router.post('/update_menu', verifyToken, async (req, res) => {
 
     // Validate required fields
     if (!menu_id) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'menu_id is required'
@@ -69,7 +63,6 @@ router.post('/update_menu', verifyToken, async (req, res) => {
     // Check menu exists and get venue_id
     const menuCheck = await query('SELECT id, venue_id FROM menus WHERE id = $1', [menu_id]);
     if (menuCheck.rows.length === 0) {
-      logger.response('MENU_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'MENU_NOT_FOUND',
         message: 'Menu not found'
@@ -80,7 +73,6 @@ router.post('/update_menu', verifyToken, async (req, res) => {
 
     // Check user has access to this venue
     if (req.user.venue_id !== menu.venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this menu'
@@ -94,7 +86,6 @@ router.post('/update_menu', verifyToken, async (req, res) => {
         [menu.venue_id, slug, menu_id]
       );
       if (slugCheck.rows.length > 0) {
-        logger.response('SLUG_EXISTS', Date.now() - start);
         return res.json({
           return_code: 'SLUG_EXISTS',
           message: 'A menu with this slug already exists for this venue'
@@ -148,7 +139,6 @@ router.post('/update_menu', verifyToken, async (req, res) => {
 
     // If no updates provided
     if (updates.length === 0) {
-      logger.response('SUCCESS', Date.now() - start);
       return res.json({
         return_code: 'SUCCESS',
         message: 'No changes to update'
@@ -163,14 +153,13 @@ router.post('/update_menu', verifyToken, async (req, res) => {
       values
     );
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       message: 'Menu updated successfully'
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('update_menu error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while updating menu'

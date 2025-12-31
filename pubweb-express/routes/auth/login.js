@@ -20,7 +20,8 @@ Success Response:
     "id": 1,
     "name": "Admin User",
     "email": "admin@nagshead.com",
-    "venue_id": 1
+    "venue_id": 1,
+    "venue_name": "The Nags Head"
   }
 }
 =======================================================================
@@ -37,34 +38,30 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const { query } = require('../../database');
 const { generateToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('login');
 
 router.post('/login', async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { email, password } = req.body;
 
     // Validate required fields
     if (!email || !password) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'Email and password are required'
       });
     }
 
-    // Find user by email
+    // Find user by email, joining with venues to get venue name
     const userResult = await query(
-      'SELECT id, venue_id, email, name, password_hash, role FROM app_user WHERE email = $1',
+      `SELECT u.id, u.venue_id, u.email, u.name, u.password_hash, u.role, v.name as venue_name
+       FROM app_user u
+       LEFT JOIN venues v ON v.id = u.venue_id
+       WHERE u.email = $1`,
       [email.toLowerCase()]
     );
 
     if (userResult.rows.length === 0) {
-      logger.response('INVALID_CREDENTIALS', Date.now() - start);
       return res.json({
         return_code: 'INVALID_CREDENTIALS',
         message: 'Invalid email or password'
@@ -77,7 +74,6 @@ router.post('/login', async (req, res) => {
     const passwordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!passwordValid) {
-      logger.response('INVALID_CREDENTIALS', Date.now() - start);
       return res.json({
         return_code: 'INVALID_CREDENTIALS',
         message: 'Invalid email or password'
@@ -93,7 +89,6 @@ router.post('/login', async (req, res) => {
     // Generate JWT token
     const token = generateToken(user.id);
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       token,
@@ -101,12 +96,13 @@ router.post('/login', async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        venue_id: user.venue_id
+        venue_id: user.venue_id,
+        venue_name: user.venue_name
       }
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('Login error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred during login'

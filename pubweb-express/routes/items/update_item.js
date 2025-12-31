@@ -48,13 +48,8 @@ const router = express.Router();
 const { query } = require('../../database');
 const { withTransaction } = require('../../utils/transaction');
 const { verifyToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('update_item');
 
 router.post('/update_item', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const {
@@ -64,7 +59,6 @@ router.post('/update_item', verifyToken, async (req, res) => {
 
     // Validate required fields
     if (!item_id) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'item_id is required'
@@ -74,7 +68,6 @@ router.post('/update_item', verifyToken, async (req, res) => {
     // Validate variants array if provided
     if (variants !== undefined && variants !== null) {
       if (!Array.isArray(variants)) {
-        logger.response('MISSING_FIELDS', Date.now() - start);
         return res.json({
           return_code: 'MISSING_FIELDS',
           message: 'variants must be an array'
@@ -82,7 +75,6 @@ router.post('/update_item', verifyToken, async (req, res) => {
       }
       for (const variant of variants) {
         if (!variant.label || variant.price === undefined || variant.price === null) {
-          logger.response('MISSING_FIELDS', Date.now() - start);
           return res.json({
             return_code: 'MISSING_FIELDS',
             message: 'Each variant must have a label and price'
@@ -103,7 +95,6 @@ router.post('/update_item', verifyToken, async (req, res) => {
     );
 
     if (itemCheck.rows.length === 0) {
-      logger.response('ITEM_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'ITEM_NOT_FOUND',
         message: 'Item not found'
@@ -114,7 +105,6 @@ router.post('/update_item', verifyToken, async (req, res) => {
 
     // Check user has access to this venue
     if (req.user.venue_id !== item.venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this item'
@@ -214,14 +204,13 @@ router.post('/update_item', verifyToken, async (req, res) => {
       }
     });
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       message: 'Item updated successfully'
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('update_item error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while updating item'

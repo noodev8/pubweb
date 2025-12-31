@@ -30,20 +30,14 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('delete_section');
 
 router.post('/delete_section', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { section_id } = req.body;
 
     // Validate required fields
     if (!section_id) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'section_id is required'
@@ -60,7 +54,6 @@ router.post('/delete_section', verifyToken, async (req, res) => {
     );
 
     if (sectionCheck.rows.length === 0) {
-      logger.response('SECTION_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'SECTION_NOT_FOUND',
         message: 'Section not found'
@@ -71,7 +64,6 @@ router.post('/delete_section', verifyToken, async (req, res) => {
 
     // Check user has access
     if (req.user.venue_id !== section.venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this section'
@@ -81,14 +73,13 @@ router.post('/delete_section', verifyToken, async (req, res) => {
     // Delete section (CASCADE will delete items)
     await query('DELETE FROM menu_sections WHERE id = $1', [section_id]);
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       message: 'Section deleted successfully'
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('delete_section error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while deleting section'

@@ -98,7 +98,7 @@ async function optionalAuth(req, res, next) {
       );
 
       req.user = userResult.rows.length > 0 ? userResult.rows[0] : null;
-    } catch (err) {
+    } catch (_err) {
       // Invalid or expired token - continue without user
       req.user = null;
     }

@@ -52,20 +52,14 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('update_venue');
 
 router.post('/update_venue', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { venue_id, name, tagline, description, address, contact, social } = req.body;
 
     // Validate required fields
     if (!venue_id) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'venue_id is required'
@@ -74,7 +68,6 @@ router.post('/update_venue', verifyToken, async (req, res) => {
 
     // Check user has access to this venue
     if (req.user.venue_id !== venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this venue'
@@ -84,7 +77,6 @@ router.post('/update_venue', verifyToken, async (req, res) => {
     // Check venue exists
     const venueCheck = await query('SELECT id FROM venues WHERE id = $1', [venue_id]);
     if (venueCheck.rows.length === 0) {
-      logger.response('VENUE_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'VENUE_NOT_FOUND',
         message: 'Venue not found'
@@ -175,7 +167,6 @@ router.post('/update_venue', verifyToken, async (req, res) => {
 
     // If no updates provided
     if (updates.length === 0) {
-      logger.response('SUCCESS', Date.now() - start);
       return res.json({
         return_code: 'SUCCESS',
         message: 'No changes to update'
@@ -192,14 +183,13 @@ router.post('/update_venue', verifyToken, async (req, res) => {
       values
     );
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       message: 'Venue updated successfully'
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('update_venue error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while updating venue'

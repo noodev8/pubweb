@@ -37,22 +37,17 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
 
-const logger = createRouteLogger('update_attraction');
 
 const VALID_CATEGORIES = ['heritage', 'nature', 'activities', 'dining', 'shopping', 'transport'];
 
 router.post('/update_attraction', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { attraction_id, name, description, category, distance, websiteUrl, image } = req.body;
 
     // Validate required fields
     if (!attraction_id) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'attraction_id is required'
@@ -61,7 +56,6 @@ router.post('/update_attraction', verifyToken, async (req, res) => {
 
     // Validate category if provided
     if (category !== undefined && !VALID_CATEGORIES.includes(category)) {
-      logger.response('INVALID_CATEGORY', Date.now() - start);
       return res.json({
         return_code: 'INVALID_CATEGORY',
         message: `Category must be one of: ${VALID_CATEGORIES.join(', ')}`
@@ -75,7 +69,6 @@ router.post('/update_attraction', verifyToken, async (req, res) => {
     );
 
     if (attractionCheck.rows.length === 0) {
-      logger.response('ATTRACTION_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'ATTRACTION_NOT_FOUND',
         message: 'Attraction not found'
@@ -86,7 +79,6 @@ router.post('/update_attraction', verifyToken, async (req, res) => {
 
     // Check user has access
     if (req.user.venue_id !== attraction.venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this attraction'
@@ -124,7 +116,6 @@ router.post('/update_attraction', verifyToken, async (req, res) => {
     }
 
     if (updates.length === 0) {
-      logger.response('SUCCESS', Date.now() - start);
       return res.json({
         return_code: 'SUCCESS',
         message: 'No changes to update'
@@ -138,14 +129,13 @@ router.post('/update_attraction', verifyToken, async (req, res) => {
       values
     );
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       message: 'Attraction updated successfully'
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('update_attraction error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while updating attraction'

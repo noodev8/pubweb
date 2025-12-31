@@ -162,6 +162,7 @@ export interface User {
   name: string;
   email: string;
   venue_id: number;
+  venue_name: string;
 }
 
 export interface Venue {

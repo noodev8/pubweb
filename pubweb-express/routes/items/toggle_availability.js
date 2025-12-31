@@ -32,20 +32,14 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('toggle_availability');
 
 router.post('/toggle_availability', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { item_id } = req.body;
 
     // Validate required fields
     if (!item_id) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'item_id is required'
@@ -63,7 +57,6 @@ router.post('/toggle_availability', verifyToken, async (req, res) => {
     );
 
     if (itemCheck.rows.length === 0) {
-      logger.response('ITEM_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'ITEM_NOT_FOUND',
         message: 'Item not found'
@@ -74,7 +67,6 @@ router.post('/toggle_availability', verifyToken, async (req, res) => {
 
     // Check user has access
     if (req.user.venue_id !== item.venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this item'
@@ -89,7 +81,6 @@ router.post('/toggle_availability', verifyToken, async (req, res) => {
       [newAvailability, item_id]
     );
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       isAvailable: newAvailability,
@@ -97,7 +88,7 @@ router.post('/toggle_availability', verifyToken, async (req, res) => {
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('toggle_availability error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while toggling availability'

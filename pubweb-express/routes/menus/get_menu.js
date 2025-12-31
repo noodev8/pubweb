@@ -79,20 +79,14 @@ Return Codes:
 const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('get_menu');
 
 router.post('/get_menu', async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { menu_id } = req.body;
 
     // Validate required fields
     if (!menu_id) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'menu_id is required'
@@ -125,7 +119,6 @@ router.post('/get_menu', async (req, res) => {
 
     // If no rows returned, the menu doesn't exist
     if (result.rows.length === 0) {
-      logger.response('MENU_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'MENU_NOT_FOUND',
         message: 'Menu not found'
@@ -219,14 +212,13 @@ router.post('/get_menu', async (req, res) => {
     // Convert the Map values to the sections array
     menu.sections = Array.from(sectionsMap.values());
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       menu
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('get_menu error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while fetching menu'

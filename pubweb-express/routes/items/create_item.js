@@ -52,13 +52,8 @@ const router = express.Router();
 const { query } = require('../../database');
 const { withTransaction } = require('../../utils/transaction');
 const { verifyToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('create_item');
 
 router.post('/create_item', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const {
@@ -68,7 +63,6 @@ router.post('/create_item', verifyToken, async (req, res) => {
 
     // Validate required fields
     if (!section_id || !name) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'section_id and name are required'
@@ -79,7 +73,6 @@ router.post('/create_item', verifyToken, async (req, res) => {
     if (variants && Array.isArray(variants)) {
       for (const variant of variants) {
         if (!variant.label || variant.price === undefined || variant.price === null) {
-          logger.response('MISSING_FIELDS', Date.now() - start);
           return res.json({
             return_code: 'MISSING_FIELDS',
             message: 'Each variant must have a label and price'
@@ -99,7 +92,6 @@ router.post('/create_item', verifyToken, async (req, res) => {
     );
 
     if (sectionCheck.rows.length === 0) {
-      logger.response('SECTION_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'SECTION_NOT_FOUND',
         message: 'Section not found'
@@ -110,7 +102,6 @@ router.post('/create_item', verifyToken, async (req, res) => {
 
     // Check user has access to this venue
     if (req.user.venue_id !== section.venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this section'
@@ -167,14 +158,13 @@ router.post('/create_item', verifyToken, async (req, res) => {
       return newItemId;
     });
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       item_id: itemId
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('create_item error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while creating item'

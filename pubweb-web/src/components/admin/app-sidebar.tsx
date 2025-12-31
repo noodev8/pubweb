@@ -66,7 +66,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b p-4">
-        <div className="font-semibold text-lg">Venue Manager</div>
+        <div className="font-semibold text-lg">{user?.venue_name || 'Venue Manager'}</div>
         {user && (
           <div className="text-sm text-muted-foreground truncate">
             {user.email}

@@ -33,20 +33,14 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
-const { createRouteLogger } = require('../../utils/apiLogger');
-
-const logger = createRouteLogger('update_section');
 
 router.post('/update_section', verifyToken, async (req, res) => {
-  const start = Date.now();
-  logger.request(req.body);
 
   try {
     const { section_id, name, description, sortOrder } = req.body;
 
     // Validate required fields
     if (!section_id) {
-      logger.response('MISSING_FIELDS', Date.now() - start);
       return res.json({
         return_code: 'MISSING_FIELDS',
         message: 'section_id is required'
@@ -63,7 +57,6 @@ router.post('/update_section', verifyToken, async (req, res) => {
     );
 
     if (sectionCheck.rows.length === 0) {
-      logger.response('SECTION_NOT_FOUND', Date.now() - start);
       return res.json({
         return_code: 'SECTION_NOT_FOUND',
         message: 'Section not found'
@@ -74,7 +67,6 @@ router.post('/update_section', verifyToken, async (req, res) => {
 
     // Check user has access to this venue
     if (req.user.venue_id !== section.venue_id) {
-      logger.response('FORBIDDEN', Date.now() - start);
       return res.json({
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this section'
@@ -100,7 +92,6 @@ router.post('/update_section', verifyToken, async (req, res) => {
     }
 
     if (updates.length === 0) {
-      logger.response('SUCCESS', Date.now() - start);
       return res.json({
         return_code: 'SUCCESS',
         message: 'No changes to update'
@@ -114,14 +105,13 @@ router.post('/update_section', verifyToken, async (req, res) => {
       values
     );
 
-    logger.response('SUCCESS', Date.now() - start);
     return res.json({
       return_code: 'SUCCESS',
       message: 'Section updated successfully'
     });
 
   } catch (error) {
-    logger.error(error);
+    console.error('update_section error:', error);
     return res.json({
       return_code: 'SERVER_ERROR',
       message: 'An error occurred while updating section'
