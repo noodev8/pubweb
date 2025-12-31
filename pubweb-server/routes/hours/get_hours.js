@@ -31,7 +31,8 @@ Success Response:
         "isClosed": true,
         "periods": null
       }
-    ]
+    ],
+    "specialNotice": "Closed Mondays & Tuesdays in January"
   }
 }
 =======================================================================
@@ -60,14 +61,15 @@ router.post('/get_hours', async (req, res) => {
       });
     }
 
-    // Check venue exists
-    const venueCheck = await query('SELECT id FROM venues WHERE id = $1', [venue_id]);
+    // Check venue exists and get special notice
+    const venueCheck = await query('SELECT id, special_hours_notice FROM venues WHERE id = $1', [venue_id]);
     if (venueCheck.rows.length === 0) {
       return res.json({
         return_code: 'VENUE_NOT_FOUND',
         message: 'Venue not found'
       });
     }
+    const specialNotice = venueCheck.rows[0].special_hours_notice;
 
     // Fetch regular hours
     const hoursResult = await query(
@@ -107,7 +109,8 @@ router.post('/get_hours', async (req, res) => {
         reason: c.reason || undefined,
         isClosed: c.is_closed,
         periods: c.periods || undefined
-      })) : undefined
+      })) : undefined,
+      specialNotice: specialNotice || undefined
     };
 
     return res.json({

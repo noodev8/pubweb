@@ -5,7 +5,7 @@
 -- Dumped from database version 16.11 (Ubuntu 16.11-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-12-30 17:22:07
+-- Started on 2025-12-31 16:09:42
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -625,7 +625,8 @@ CREATE TABLE public.venues (
     twitter character varying(255),
     tripadvisor character varying(255),
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    special_hours_notice character varying(255)
 );
 
 
@@ -1152,7 +1153,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENC
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO pubweb_user;
 
 
--- Completed on 2025-12-30 17:22:09
+-- Completed on 2025-12-31 16:09:44
 
 --
 -- PostgreSQL database dump complete

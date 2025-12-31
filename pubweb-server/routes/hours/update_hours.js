@@ -26,7 +26,8 @@ Request Payload:
       "isClosed": true,
       "periods": null
     }
-  ]
+  ],
+  "specialNotice": "Closed Mon & Tue in Jan/Feb"  // string, optional - displays on website
 }
 
 Success Response:
@@ -54,7 +55,7 @@ const { withTransaction } = require('../../utils/transaction');
 router.post('/update_hours', verifyToken, async (req, res) => {
 
   try {
-    const { venue_id, regular, specialClosures } = req.body;
+    const { venue_id, regular, specialClosures, specialNotice } = req.body;
 
     // Validate required fields
     if (!venue_id) {
@@ -79,6 +80,14 @@ router.post('/update_hours', verifyToken, async (req, res) => {
         return_code: 'VENUE_NOT_FOUND',
         message: 'Venue not found'
       });
+    }
+
+    // Update special notice if provided (can be empty string to clear)
+    if (specialNotice !== undefined) {
+      await query(
+        'UPDATE venues SET special_hours_notice = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+        [specialNotice || null, venue_id]
+      );
     }
 
     // Use transaction to update hours atomically

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Save, Plus, Trash2 } from 'lucide-react';
 
@@ -50,6 +51,7 @@ export default function HoursPage() {
           isClosed: false,
           periods: [{ open: '12:00', close: '23:00' }],
         })),
+        specialNotice: '',
       });
     }
     setIsLoading(false);
@@ -148,6 +150,24 @@ export default function HoursPage() {
           {isSaving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Special Notice</CardTitle>
+          <CardDescription>
+            Optional message displayed on the website (e.g. &quot;Closed Mondays &amp; Tuesdays in January&quot;)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            placeholder="e.g. Closed Mondays & Tuesdays during January and February"
+            value={hours.specialNotice || ''}
+            onChange={(e) => setHours({ ...hours, specialNotice: e.target.value })}
+            className="max-w-xl"
+            rows={2}
+          />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

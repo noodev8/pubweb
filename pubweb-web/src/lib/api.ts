@@ -202,6 +202,7 @@ export interface Award {
 export interface OpeningHours {
   regular: DayHours[];
   specialClosures?: SpecialClosure[];
+  specialNotice?: string;
 }
 
 export interface DayHours {
