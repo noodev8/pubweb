@@ -1,0 +1,9 @@
+# Exclude non-web directories when deploying from root
+pubweb-flutter/
+pubweb-server/
+.claude/
+docs/
+*.mp4
+*.mov
+*.avi
+*.md
