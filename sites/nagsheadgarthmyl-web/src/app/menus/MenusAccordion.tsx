@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Menu, MenuSection as MenuSectionType, DietaryTag } from '@/types'
+import { Menu, MenuSection as MenuSectionType, MenuItem as MenuItemType, DietaryTag } from '@/types'
 
 const dietaryLabels: Record<DietaryTag, string> = {
   vegetarian: 'V',
@@ -22,45 +22,47 @@ function DietaryBadge({ tag }: { tag: DietaryTag }) {
   )
 }
 
-function MenuItem({
-  name,
-  description,
-  price,
-  priceNote,
-  dietaryTags,
-  isAvailable,
-}: {
-  name: string
-  description?: string
-  price?: number
-  priceNote?: string
-  dietaryTags?: DietaryTag[]
-  isAvailable: boolean
-}) {
-  if (!isAvailable) return null
+function MenuItem({ item }: { item: MenuItemType }) {
+  if (!item.isAvailable) return null
+
+  // Check if item has variants with prices
+  const hasVariants = item.variants && item.variants.length > 0
 
   return (
     <div className="py-4 border-b border-stone-200 last:border-0">
       <div className="flex justify-between items-start gap-4">
         <div className="flex-grow">
           <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="font-medium text-stone-900">{name}</h4>
-            {dietaryTags?.map((tag) => (
+            <h4 className="font-medium text-stone-900">{item.name}</h4>
+            {item.dietaryTags?.map((tag) => (
               <DietaryBadge key={tag} tag={tag} />
             ))}
           </div>
-          {description && (
-            <p className="text-sm text-stone-600 mt-1">{description}</p>
+          {item.description && (
+            <p className="text-sm text-stone-600 mt-1">{item.description}</p>
           )}
         </div>
         <div className="text-right flex-shrink-0">
-          {price !== undefined && (
-            <span className="font-medium text-stone-900">
-              £{price.toFixed(2)}
-            </span>
-          )}
-          {priceNote && (
-            <span className="text-sm text-stone-600">{priceNote}</span>
+          {hasVariants ? (
+            <div className="flex flex-col items-end gap-0.5">
+              {item.variants!.map((variant) => (
+                <span key={variant.id} className="text-stone-900">
+                  <span className="text-sm text-stone-600">{variant.label}</span>{' '}
+                  <span className="font-medium">£{variant.price.toFixed(2)}</span>
+                </span>
+              ))}
+            </div>
+          ) : (
+            <>
+              {item.price !== undefined && (
+                <span className="font-medium text-stone-900">
+                  £{item.price.toFixed(2)}
+                </span>
+              )}
+              {item.priceNote && (
+                <span className="text-sm text-stone-600">{item.priceNote}</span>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -80,15 +82,7 @@ function MenuSectionComponent({ section }: { section: MenuSectionType }) {
       )}
       <div>
         {availableItems.map((item) => (
-          <MenuItem
-            key={item.id}
-            name={item.name}
-            description={item.description}
-            price={item.price}
-            priceNote={item.priceNote}
-            dietaryTags={item.dietaryTags}
-            isAvailable={item.isAvailable}
-          />
+          <MenuItem key={item.id} item={item} />
         ))}
       </div>
     </div>

@@ -1,10 +1,10 @@
 /*
-=======================================================================
+=======================================================================================================================================
 API Route: get_menus
-=======================================================================
+=======================================================================================================================================
 Method: POST
-Purpose: Returns all menus for a venue with their sections and items.
-=======================================================================
+Purpose: Returns all menus for a venue with their sections, items, and price variants.
+=======================================================================================================================================
 Request Payload:
 {
   "venue_id": 1                        // integer, required
@@ -40,7 +40,21 @@ Success Response:
               "priceNote": null,
               "dietaryTags": ["vegetarian"],
               "isAvailable": true,
-              "sortOrder": 1
+              "sortOrder": 1,
+              "variants": []
+            },
+            {
+              "id": "2",
+              "name": "Fish & Chips",
+              "description": "Beer-battered cod",
+              "price": null,
+              "dietaryTags": [],
+              "isAvailable": true,
+              "sortOrder": 2,
+              "variants": [
+                { "id": "1", "label": "Small", "price": 9.95, "isDefault": true, "isAvailable": true, "sortOrder": 0 },
+                { "id": "2", "label": "Large", "price": 14.95, "isDefault": false, "isAvailable": true, "sortOrder": 1 }
+              ]
             }
           ]
         }
@@ -48,13 +62,13 @@ Success Response:
     }
   ]
 }
-=======================================================================
+=======================================================================================================================================
 Return Codes:
 "SUCCESS"
 "MISSING_FIELDS"
 "VENUE_NOT_FOUND"
 "SERVER_ERROR"
-=======================================================================
+=======================================================================================================================================
 */
 
 const express = require('express');
@@ -90,7 +104,8 @@ router.post('/get_menus', async (req, res) => {
       });
     }
 
-    // Fetch all menus with sections and items using JOINs to avoid N+1
+    // Fetch all menus with sections, items, and variants using JOINs to avoid N+1
+    // Single query fetches everything in one round trip to the database
     const menusResult = await query(
       `SELECT
         m.id as menu_id, m.name as menu_name, m.slug, m.description as menu_description,
@@ -99,17 +114,23 @@ router.post('/get_menus', async (req, res) => {
         s.id as section_id, s.name as section_name, s.description as section_description,
         s.sort_order as section_sort_order,
         i.id as item_id, i.name as item_name, i.description as item_description,
-        i.price, i.price_note, i.dietary_tags, i.is_available, i.sort_order as item_sort_order
+        i.price, i.price_note, i.dietary_tags, i.is_available, i.sort_order as item_sort_order,
+        v.id as variant_id, v.label as variant_label, v.price as variant_price,
+        v.is_default as variant_is_default, v.is_available as variant_is_available,
+        v.sort_order as variant_sort_order
        FROM menus m
        LEFT JOIN menu_sections s ON s.menu_id = m.id
        LEFT JOIN menu_items i ON i.section_id = s.id
+       LEFT JOIN menu_item_variants v ON v.item_id = i.id
        WHERE m.venue_id = $1
-       ORDER BY m.sort_order, s.sort_order, i.sort_order`,
+       ORDER BY m.sort_order, s.sort_order, i.sort_order, v.sort_order`,
       [venue_id]
     );
 
     // Transform flat result into nested structure
+    // Using Maps to efficiently build the hierarchy without duplicates
     const menusMap = new Map();
+    const itemsMap = new Map(); // Track items globally to add variants
 
     for (const row of menusResult.rows) {
       // Get or create menu
@@ -134,35 +155,58 @@ router.post('/get_menus', async (req, res) => {
 
       const menu = menusMap.get(row.menu_id);
 
-      // Add section if exists
-      if (row.section_id) {
-        let section = menu.sections.find(s => s.id === row.section_id.toString());
-        if (!section) {
-          section = {
-            id: row.section_id.toString(),
-            name: row.section_name,
-            description: row.section_description || undefined,
-            sortOrder: row.section_sort_order,
-            items: []
-          };
-          menu.sections.push(section);
-        }
+      // Skip if no section (menu has no sections yet)
+      if (!row.section_id) continue;
 
-        // Add item if exists
-        if (row.item_id) {
-          const existingItem = section.items.find(i => i.id === row.item_id.toString());
-          if (!existingItem) {
-            section.items.push({
-              id: row.item_id.toString(),
-              name: row.item_name,
-              description: row.item_description || undefined,
-              price: row.price ? parseFloat(row.price) : undefined,
-              priceNote: row.price_note || undefined,
-              dietaryTags: row.dietary_tags || undefined,
-              isAvailable: row.is_available,
-              sortOrder: row.item_sort_order
-            });
-          }
+      // Add section if not already added
+      let section = menu.sections.find(s => s.id === row.section_id.toString());
+      if (!section) {
+        section = {
+          id: row.section_id.toString(),
+          name: row.section_name,
+          description: row.section_description || undefined,
+          sortOrder: row.section_sort_order,
+          items: []
+        };
+        menu.sections.push(section);
+      }
+
+      // Skip if no item (section has no items yet)
+      if (!row.item_id) continue;
+
+      // Add item if not already added
+      // Use global key to track items across all processing
+      const itemKey = `${row.menu_id}-${row.section_id}-${row.item_id}`;
+      if (!itemsMap.has(itemKey)) {
+        const item = {
+          id: row.item_id.toString(),
+          name: row.item_name,
+          description: row.item_description || undefined,
+          price: row.price ? parseFloat(row.price) : undefined,
+          priceNote: row.price_note || undefined,
+          dietaryTags: row.dietary_tags || undefined,
+          isAvailable: row.is_available,
+          sortOrder: row.item_sort_order,
+          variants: []
+        };
+        itemsMap.set(itemKey, item);
+        section.items.push(item);
+      }
+
+      // Add variant to the item if present
+      if (row.variant_id) {
+        const item = itemsMap.get(itemKey);
+        // Check we haven't already added this variant
+        const variantExists = item.variants.some(v => v.id === row.variant_id.toString());
+        if (!variantExists) {
+          item.variants.push({
+            id: row.variant_id.toString(),
+            label: row.variant_label,
+            price: parseFloat(row.variant_price),
+            isDefault: row.variant_is_default,
+            isAvailable: row.variant_is_available,
+            sortOrder: row.variant_sort_order
+          });
         }
       }
     }

@@ -5,7 +5,7 @@
 -- Dumped from database version 16.11 (Ubuntu 16.11-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-12-21 21:41:08
+-- Started on 2025-12-30 17:22:07
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -67,7 +67,7 @@ CREATE SEQUENCE public.accommodation_id_seq
 ALTER SEQUENCE public.accommodation_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3550 (class 0 OID 0)
+-- TOC entry 3563 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: accommodation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -111,7 +111,7 @@ CREATE SEQUENCE public.app_user_id_seq
 ALTER SEQUENCE public.app_user_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3551 (class 0 OID 0)
+-- TOC entry 3564 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: app_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -155,7 +155,7 @@ CREATE SEQUENCE public.attractions_id_seq
 ALTER SEQUENCE public.attractions_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3552 (class 0 OID 0)
+-- TOC entry 3565 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: attractions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -198,12 +198,55 @@ CREATE SEQUENCE public.awards_id_seq
 ALTER SEQUENCE public.awards_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3553 (class 0 OID 0)
+-- TOC entry 3566 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: awards_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
 
 ALTER SEQUENCE public.awards_id_seq OWNED BY public.awards.id;
+
+
+--
+-- TOC entry 242 (class 1259 OID 23465)
+-- Name: menu_item_variants; Type: TABLE; Schema: public; Owner: pubweb_user
+--
+
+CREATE TABLE public.menu_item_variants (
+    id integer NOT NULL,
+    item_id integer NOT NULL,
+    label character varying(50) NOT NULL,
+    price numeric(10,2) NOT NULL,
+    is_default boolean DEFAULT false,
+    is_available boolean DEFAULT true,
+    sort_order integer DEFAULT 0
+);
+
+
+ALTER TABLE public.menu_item_variants OWNER TO pubweb_user;
+
+--
+-- TOC entry 241 (class 1259 OID 23464)
+-- Name: menu_item_variants_id_seq; Type: SEQUENCE; Schema: public; Owner: pubweb_user
+--
+
+CREATE SEQUENCE public.menu_item_variants_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.menu_item_variants_id_seq OWNER TO pubweb_user;
+
+--
+-- TOC entry 3567 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: menu_item_variants_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
+--
+
+ALTER SEQUENCE public.menu_item_variants_id_seq OWNED BY public.menu_item_variants.id;
 
 
 --
@@ -243,7 +286,7 @@ CREATE SEQUENCE public.menu_items_id_seq
 ALTER SEQUENCE public.menu_items_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3554 (class 0 OID 0)
+-- TOC entry 3568 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: menu_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -284,7 +327,7 @@ CREATE SEQUENCE public.menu_sections_id_seq
 ALTER SEQUENCE public.menu_sections_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3555 (class 0 OID 0)
+-- TOC entry 3569 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: menu_sections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -334,7 +377,7 @@ CREATE SEQUENCE public.menus_id_seq
 ALTER SEQUENCE public.menus_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3556 (class 0 OID 0)
+-- TOC entry 3570 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: menus_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -375,7 +418,7 @@ CREATE SEQUENCE public.opening_hours_id_seq
 ALTER SEQUENCE public.opening_hours_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3557 (class 0 OID 0)
+-- TOC entry 3571 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: opening_hours_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -416,7 +459,7 @@ CREATE SEQUENCE public.page_content_id_seq
 ALTER SEQUENCE public.page_content_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3558 (class 0 OID 0)
+-- TOC entry 3572 (class 0 OID 0)
 -- Dependencies: 237
 -- Name: page_content_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -459,7 +502,7 @@ CREATE SEQUENCE public.page_sections_id_seq
 ALTER SEQUENCE public.page_sections_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3559 (class 0 OID 0)
+-- TOC entry 3573 (class 0 OID 0)
 -- Dependencies: 239
 -- Name: page_sections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -508,7 +551,7 @@ CREATE SEQUENCE public.rooms_id_seq
 ALTER SEQUENCE public.rooms_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3560 (class 0 OID 0)
+-- TOC entry 3574 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -550,7 +593,7 @@ CREATE SEQUENCE public.special_closures_id_seq
 ALTER SEQUENCE public.special_closures_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3561 (class 0 OID 0)
+-- TOC entry 3575 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: special_closures_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -605,7 +648,7 @@ CREATE SEQUENCE public.venues_id_seq
 ALTER SEQUENCE public.venues_id_seq OWNER TO pubweb_user;
 
 --
--- TOC entry 3562 (class 0 OID 0)
+-- TOC entry 3576 (class 0 OID 0)
 -- Dependencies: 215
 -- Name: venues_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pubweb_user
 --
@@ -614,7 +657,7 @@ ALTER SEQUENCE public.venues_id_seq OWNED BY public.venues.id;
 
 
 --
--- TOC entry 3335 (class 2604 OID 23309)
+-- TOC entry 3340 (class 2604 OID 23309)
 -- Name: accommodation id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -622,7 +665,7 @@ ALTER TABLE ONLY public.accommodation ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3315 (class 2604 OID 23196)
+-- TOC entry 3320 (class 2604 OID 23196)
 -- Name: app_user id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -630,7 +673,7 @@ ALTER TABLE ONLY public.app_user ALTER COLUMN id SET DEFAULT nextval('public.app
 
 
 --
--- TOC entry 3340 (class 2604 OID 23344)
+-- TOC entry 3345 (class 2604 OID 23344)
 -- Name: attractions id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -638,7 +681,7 @@ ALTER TABLE ONLY public.attractions ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 3318 (class 2604 OID 23214)
+-- TOC entry 3323 (class 2604 OID 23214)
 -- Name: awards id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -646,7 +689,15 @@ ALTER TABLE ONLY public.awards ALTER COLUMN id SET DEFAULT nextval('public.award
 
 
 --
--- TOC entry 3332 (class 2604 OID 23293)
+-- TOC entry 3350 (class 2604 OID 23468)
+-- Name: menu_item_variants id; Type: DEFAULT; Schema: public; Owner: pubweb_user
+--
+
+ALTER TABLE ONLY public.menu_item_variants ALTER COLUMN id SET DEFAULT nextval('public.menu_item_variants_id_seq'::regclass);
+
+
+--
+-- TOC entry 3337 (class 2604 OID 23293)
 -- Name: menu_items id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -654,7 +705,7 @@ ALTER TABLE ONLY public.menu_items ALTER COLUMN id SET DEFAULT nextval('public.m
 
 
 --
--- TOC entry 3330 (class 2604 OID 23278)
+-- TOC entry 3335 (class 2604 OID 23278)
 -- Name: menu_sections id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -662,7 +713,7 @@ ALTER TABLE ONLY public.menu_sections ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3324 (class 2604 OID 23257)
+-- TOC entry 3329 (class 2604 OID 23257)
 -- Name: menus id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -670,7 +721,7 @@ ALTER TABLE ONLY public.menus ALTER COLUMN id SET DEFAULT nextval('public.menus_
 
 
 --
--- TOC entry 3320 (class 2604 OID 23227)
+-- TOC entry 3325 (class 2604 OID 23227)
 -- Name: opening_hours id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -678,7 +729,7 @@ ALTER TABLE ONLY public.opening_hours ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3341 (class 2604 OID 23358)
+-- TOC entry 3346 (class 2604 OID 23358)
 -- Name: page_content id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -686,7 +737,7 @@ ALTER TABLE ONLY public.page_content ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3342 (class 2604 OID 23374)
+-- TOC entry 3347 (class 2604 OID 23374)
 -- Name: page_sections id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -694,7 +745,7 @@ ALTER TABLE ONLY public.page_sections ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3336 (class 2604 OID 23325)
+-- TOC entry 3341 (class 2604 OID 23325)
 -- Name: rooms id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -702,7 +753,7 @@ ALTER TABLE ONLY public.rooms ALTER COLUMN id SET DEFAULT nextval('public.rooms_
 
 
 --
--- TOC entry 3322 (class 2604 OID 23242)
+-- TOC entry 3327 (class 2604 OID 23242)
 -- Name: special_closures id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -710,7 +761,7 @@ ALTER TABLE ONLY public.special_closures ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 3311 (class 2604 OID 23184)
+-- TOC entry 3316 (class 2604 OID 23184)
 -- Name: venues id; Type: DEFAULT; Schema: public; Owner: pubweb_user
 --
 
@@ -718,7 +769,7 @@ ALTER TABLE ONLY public.venues ALTER COLUMN id SET DEFAULT nextval('public.venue
 
 
 --
--- TOC entry 3372 (class 2606 OID 23313)
+-- TOC entry 3381 (class 2606 OID 23313)
 -- Name: accommodation accommodation_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -727,7 +778,7 @@ ALTER TABLE ONLY public.accommodation
 
 
 --
--- TOC entry 3374 (class 2606 OID 23315)
+-- TOC entry 3383 (class 2606 OID 23315)
 -- Name: accommodation accommodation_venue_id_key; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -736,7 +787,7 @@ ALTER TABLE ONLY public.accommodation
 
 
 --
--- TOC entry 3348 (class 2606 OID 23204)
+-- TOC entry 3357 (class 2606 OID 23204)
 -- Name: app_user app_user_email_key; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -745,7 +796,7 @@ ALTER TABLE ONLY public.app_user
 
 
 --
--- TOC entry 3350 (class 2606 OID 23202)
+-- TOC entry 3359 (class 2606 OID 23202)
 -- Name: app_user app_user_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -754,7 +805,7 @@ ALTER TABLE ONLY public.app_user
 
 
 --
--- TOC entry 3381 (class 2606 OID 23348)
+-- TOC entry 3390 (class 2606 OID 23348)
 -- Name: attractions attractions_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -763,7 +814,7 @@ ALTER TABLE ONLY public.attractions
 
 
 --
--- TOC entry 3353 (class 2606 OID 23217)
+-- TOC entry 3362 (class 2606 OID 23217)
 -- Name: awards awards_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -772,7 +823,16 @@ ALTER TABLE ONLY public.awards
 
 
 --
--- TOC entry 3370 (class 2606 OID 23299)
+-- TOC entry 3401 (class 2606 OID 23473)
+-- Name: menu_item_variants menu_item_variants_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
+--
+
+ALTER TABLE ONLY public.menu_item_variants
+    ADD CONSTRAINT menu_item_variants_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3379 (class 2606 OID 23299)
 -- Name: menu_items menu_items_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -781,7 +841,7 @@ ALTER TABLE ONLY public.menu_items
 
 
 --
--- TOC entry 3367 (class 2606 OID 23283)
+-- TOC entry 3376 (class 2606 OID 23283)
 -- Name: menu_sections menu_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -790,7 +850,7 @@ ALTER TABLE ONLY public.menu_sections
 
 
 --
--- TOC entry 3362 (class 2606 OID 23266)
+-- TOC entry 3371 (class 2606 OID 23266)
 -- Name: menus menus_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -799,7 +859,7 @@ ALTER TABLE ONLY public.menus
 
 
 --
--- TOC entry 3364 (class 2606 OID 23268)
+-- TOC entry 3373 (class 2606 OID 23268)
 -- Name: menus menus_venue_id_slug_key; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -808,7 +868,7 @@ ALTER TABLE ONLY public.menus
 
 
 --
--- TOC entry 3356 (class 2606 OID 23232)
+-- TOC entry 3365 (class 2606 OID 23232)
 -- Name: opening_hours opening_hours_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -817,7 +877,7 @@ ALTER TABLE ONLY public.opening_hours
 
 
 --
--- TOC entry 3385 (class 2606 OID 23362)
+-- TOC entry 3394 (class 2606 OID 23362)
 -- Name: page_content page_content_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -826,7 +886,7 @@ ALTER TABLE ONLY public.page_content
 
 
 --
--- TOC entry 3387 (class 2606 OID 23364)
+-- TOC entry 3396 (class 2606 OID 23364)
 -- Name: page_content page_content_venue_id_page_key; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -835,7 +895,7 @@ ALTER TABLE ONLY public.page_content
 
 
 --
--- TOC entry 3389 (class 2606 OID 23380)
+-- TOC entry 3398 (class 2606 OID 23380)
 -- Name: page_sections page_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -844,7 +904,7 @@ ALTER TABLE ONLY public.page_sections
 
 
 --
--- TOC entry 3377 (class 2606 OID 23332)
+-- TOC entry 3386 (class 2606 OID 23332)
 -- Name: rooms rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -853,7 +913,7 @@ ALTER TABLE ONLY public.rooms
 
 
 --
--- TOC entry 3379 (class 2606 OID 23334)
+-- TOC entry 3388 (class 2606 OID 23334)
 -- Name: rooms rooms_venue_id_slug_key; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -862,7 +922,7 @@ ALTER TABLE ONLY public.rooms
 
 
 --
--- TOC entry 3358 (class 2606 OID 23247)
+-- TOC entry 3367 (class 2606 OID 23247)
 -- Name: special_closures special_closures_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -871,7 +931,7 @@ ALTER TABLE ONLY public.special_closures
 
 
 --
--- TOC entry 3346 (class 2606 OID 23191)
+-- TOC entry 3355 (class 2606 OID 23191)
 -- Name: venues venues_pkey; Type: CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -880,7 +940,7 @@ ALTER TABLE ONLY public.venues
 
 
 --
--- TOC entry 3351 (class 1259 OID 23394)
+-- TOC entry 3360 (class 1259 OID 23394)
 -- Name: idx_app_user_email; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -888,7 +948,7 @@ CREATE INDEX idx_app_user_email ON public.app_user USING btree (email);
 
 
 --
--- TOC entry 3382 (class 1259 OID 23391)
+-- TOC entry 3391 (class 1259 OID 23391)
 -- Name: idx_attractions_venue; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -896,7 +956,15 @@ CREATE INDEX idx_attractions_venue ON public.attractions USING btree (venue_id);
 
 
 --
--- TOC entry 3368 (class 1259 OID 23389)
+-- TOC entry 3399 (class 1259 OID 23479)
+-- Name: idx_menu_item_variants_item; Type: INDEX; Schema: public; Owner: pubweb_user
+--
+
+CREATE INDEX idx_menu_item_variants_item ON public.menu_item_variants USING btree (item_id);
+
+
+--
+-- TOC entry 3377 (class 1259 OID 23389)
 -- Name: idx_menu_items_section; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -904,7 +972,7 @@ CREATE INDEX idx_menu_items_section ON public.menu_items USING btree (section_id
 
 
 --
--- TOC entry 3365 (class 1259 OID 23388)
+-- TOC entry 3374 (class 1259 OID 23388)
 -- Name: idx_menu_sections_menu; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -912,7 +980,7 @@ CREATE INDEX idx_menu_sections_menu ON public.menu_sections USING btree (menu_id
 
 
 --
--- TOC entry 3359 (class 1259 OID 23387)
+-- TOC entry 3368 (class 1259 OID 23387)
 -- Name: idx_menus_slug; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -920,7 +988,7 @@ CREATE INDEX idx_menus_slug ON public.menus USING btree (venue_id, slug);
 
 
 --
--- TOC entry 3360 (class 1259 OID 23386)
+-- TOC entry 3369 (class 1259 OID 23386)
 -- Name: idx_menus_venue; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -928,7 +996,7 @@ CREATE INDEX idx_menus_venue ON public.menus USING btree (venue_id);
 
 
 --
--- TOC entry 3354 (class 1259 OID 23392)
+-- TOC entry 3363 (class 1259 OID 23392)
 -- Name: idx_opening_hours_venue; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -936,7 +1004,7 @@ CREATE INDEX idx_opening_hours_venue ON public.opening_hours USING btree (venue_
 
 
 --
--- TOC entry 3383 (class 1259 OID 23393)
+-- TOC entry 3392 (class 1259 OID 23393)
 -- Name: idx_page_content_venue; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -944,7 +1012,7 @@ CREATE INDEX idx_page_content_venue ON public.page_content USING btree (venue_id
 
 
 --
--- TOC entry 3375 (class 1259 OID 23390)
+-- TOC entry 3384 (class 1259 OID 23390)
 -- Name: idx_rooms_venue; Type: INDEX; Schema: public; Owner: pubweb_user
 --
 
@@ -952,7 +1020,7 @@ CREATE INDEX idx_rooms_venue ON public.rooms USING btree (venue_id);
 
 
 --
--- TOC entry 3397 (class 2606 OID 23316)
+-- TOC entry 3409 (class 2606 OID 23316)
 -- Name: accommodation accommodation_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -961,7 +1029,7 @@ ALTER TABLE ONLY public.accommodation
 
 
 --
--- TOC entry 3390 (class 2606 OID 23205)
+-- TOC entry 3402 (class 2606 OID 23205)
 -- Name: app_user app_users_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -970,7 +1038,7 @@ ALTER TABLE ONLY public.app_user
 
 
 --
--- TOC entry 3399 (class 2606 OID 23349)
+-- TOC entry 3411 (class 2606 OID 23349)
 -- Name: attractions attractions_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -979,7 +1047,7 @@ ALTER TABLE ONLY public.attractions
 
 
 --
--- TOC entry 3391 (class 2606 OID 23218)
+-- TOC entry 3403 (class 2606 OID 23218)
 -- Name: awards awards_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -988,7 +1056,16 @@ ALTER TABLE ONLY public.awards
 
 
 --
--- TOC entry 3396 (class 2606 OID 23300)
+-- TOC entry 3414 (class 2606 OID 23474)
+-- Name: menu_item_variants menu_item_variants_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
+--
+
+ALTER TABLE ONLY public.menu_item_variants
+    ADD CONSTRAINT menu_item_variants_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.menu_items(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3408 (class 2606 OID 23300)
 -- Name: menu_items menu_items_section_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -997,7 +1074,7 @@ ALTER TABLE ONLY public.menu_items
 
 
 --
--- TOC entry 3395 (class 2606 OID 23284)
+-- TOC entry 3407 (class 2606 OID 23284)
 -- Name: menu_sections menu_sections_menu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -1006,7 +1083,7 @@ ALTER TABLE ONLY public.menu_sections
 
 
 --
--- TOC entry 3394 (class 2606 OID 23269)
+-- TOC entry 3406 (class 2606 OID 23269)
 -- Name: menus menus_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -1015,7 +1092,7 @@ ALTER TABLE ONLY public.menus
 
 
 --
--- TOC entry 3392 (class 2606 OID 23233)
+-- TOC entry 3404 (class 2606 OID 23233)
 -- Name: opening_hours opening_hours_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -1024,7 +1101,7 @@ ALTER TABLE ONLY public.opening_hours
 
 
 --
--- TOC entry 3400 (class 2606 OID 23365)
+-- TOC entry 3412 (class 2606 OID 23365)
 -- Name: page_content page_content_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -1033,7 +1110,7 @@ ALTER TABLE ONLY public.page_content
 
 
 --
--- TOC entry 3401 (class 2606 OID 23381)
+-- TOC entry 3413 (class 2606 OID 23381)
 -- Name: page_sections page_sections_page_content_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -1042,7 +1119,7 @@ ALTER TABLE ONLY public.page_sections
 
 
 --
--- TOC entry 3398 (class 2606 OID 23335)
+-- TOC entry 3410 (class 2606 OID 23335)
 -- Name: rooms rooms_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -1051,7 +1128,7 @@ ALTER TABLE ONLY public.rooms
 
 
 --
--- TOC entry 3393 (class 2606 OID 23248)
+-- TOC entry 3405 (class 2606 OID 23248)
 -- Name: special_closures special_closures_venue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pubweb_user
 --
 
@@ -1060,7 +1137,7 @@ ALTER TABLE ONLY public.special_closures
 
 
 --
--- TOC entry 2099 (class 826 OID 23179)
+-- TOC entry 2104 (class 826 OID 23179)
 -- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: postgres
 --
 
@@ -1068,14 +1145,14 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENC
 
 
 --
--- TOC entry 2098 (class 826 OID 23178)
+-- TOC entry 2103 (class 826 OID 23178)
 -- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: postgres
 --
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO pubweb_user;
 
 
--- Completed on 2025-12-21 21:41:10
+-- Completed on 2025-12-30 17:22:09
 
 --
 -- PostgreSQL database dump complete

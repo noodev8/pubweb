@@ -126,6 +126,16 @@ export interface MenuItem {
   dietaryTags?: DietaryTag[]
   isAvailable: boolean      // Can be marked unavailable without removing
   sortOrder: number
+  variants?: MenuItemVariant[]  // Price variants (e.g., Small/Large)
+}
+
+export interface MenuItemVariant {
+  id: string
+  label: string             // e.g., "Small", "Large"
+  price: number
+  isDefault?: boolean
+  isAvailable?: boolean
+  sortOrder?: number
 }
 
 export type DietaryTag =

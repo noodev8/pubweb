@@ -250,6 +250,16 @@ export interface MenuItem {
   dietaryTags?: DietaryTag[];
   isAvailable: boolean;
   sortOrder: number;
+  variants?: MenuItemVariant[];
+}
+
+export interface MenuItemVariant {
+  id?: string;
+  label: string;
+  price: number;
+  isDefault?: boolean;
+  isAvailable?: boolean;
+  sortOrder?: number;
 }
 
 export type DietaryTag =

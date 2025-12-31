@@ -18,13 +18,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { Plus, Trash2, Edit, UtensilsCrossed, ChevronUp, ChevronDown } from 'lucide-react';
@@ -38,7 +31,6 @@ export default function MenusPage() {
     name: '',
     slug: '',
     description: '',
-    type: 'regular' as 'regular' | 'event' | 'drinks',
   });
 
   const loadMenus = async () => {
@@ -65,7 +57,7 @@ export default function MenusPage() {
     if (res.return_code === 'SUCCESS') {
       toast.success('Menu created');
       setIsCreateOpen(false);
-      setNewMenu({ name: '', slug: '', description: '', type: 'regular' });
+      setNewMenu({ name: '', slug: '', description: '' });
       loadMenus();
     } else {
       toast.error(res.message || 'Failed to create menu');
@@ -165,24 +157,6 @@ export default function MenusPage() {
                     setNewMenu({ ...newMenu, slug: e.target.value })
                   }
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="type">Type</Label>
-                <Select
-                  value={newMenu.type}
-                  onValueChange={(v) =>
-                    setNewMenu({ ...newMenu, type: v as 'regular' | 'event' | 'drinks' })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="regular">Regular</SelectItem>
-                    <SelectItem value="event">Event</SelectItem>
-                    <SelectItem value="drinks">Drinks</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Description (optional)</Label>

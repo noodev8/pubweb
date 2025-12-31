@@ -15,6 +15,7 @@ import {
   Menu,
   MenuSection,
   MenuItem,
+  MenuItemVariant,
 } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +37,7 @@ import {
   Plus,
   Trash2,
   Save,
+  Pencil,
   ChevronUp,
   ChevronDown,
 } from 'lucide-react';
@@ -73,6 +75,7 @@ export default function MenuEditPage() {
     price: '',
     priceNote: '',
     dietaryTags: [] as string[],
+    variants: [] as MenuItemVariant[],
   });
 
   const loadMenu = async () => {
@@ -154,17 +157,20 @@ export default function MenuEditPage() {
       return;
     }
 
+    // Build the item data - use either single price or variants, not both
+    const hasVariants = itemForm.variants.length > 0;
     const res = await createItem(parseInt(itemDialog.sectionId), {
       name: itemForm.name,
       description: itemForm.description || undefined,
-      price: itemForm.price ? parseFloat(itemForm.price) : undefined,
+      price: hasVariants ? undefined : (itemForm.price ? parseFloat(itemForm.price) : undefined),
       priceNote: itemForm.priceNote || undefined,
       dietaryTags: itemForm.dietaryTags.length > 0 ? itemForm.dietaryTags as MenuItem['dietaryTags'] : undefined,
+      variants: hasVariants ? itemForm.variants : undefined,
     });
 
     if (res.return_code === 'SUCCESS') {
       setItemDialog({ open: false, mode: 'create' });
-      setItemForm({ name: '', description: '', price: '', priceNote: '', dietaryTags: [] });
+      setItemForm({ name: '', description: '', price: '', priceNote: '', dietaryTags: [], variants: [] });
       loadMenu();
     } else {
       toast.error(res.message || 'Failed to create item');
@@ -174,12 +180,15 @@ export default function MenuEditPage() {
   const handleUpdateItem = async () => {
     if (!itemDialog.item) return;
 
+    // Build the item data - use either single price or variants, not both
+    const hasVariants = itemForm.variants.length > 0;
     const res = await updateItem(parseInt(itemDialog.item.id), {
       name: itemForm.name,
       description: itemForm.description || undefined,
-      price: itemForm.price ? parseFloat(itemForm.price) : undefined,
+      price: hasVariants ? undefined : (itemForm.price ? parseFloat(itemForm.price) : undefined),
       priceNote: itemForm.priceNote || undefined,
       dietaryTags: itemForm.dietaryTags.length > 0 ? itemForm.dietaryTags as MenuItem['dietaryTags'] : undefined,
+      variants: itemForm.variants, // Always pass variants (empty array clears them)
     });
 
     if (res.return_code === 'SUCCESS') {
@@ -410,6 +419,7 @@ export default function MenuEditPage() {
                           price: '',
                           priceNote: '',
                           dietaryTags: [],
+                          variants: [],
                         });
                         setItemDialog({
                           open: true,
@@ -436,7 +446,7 @@ export default function MenuEditPage() {
                         });
                       }}
                     >
-                      <Save className="h-4 w-4" />
+                      <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -492,11 +502,15 @@ export default function MenuEditPage() {
                                   <Badge variant="destructive" className="text-xs">Sold out</Badge>
                                 )}
                                 */}
-                                {item.price && (
-                                  <span className="font-medium text-sm md:hidden">
-                                    £{item.price.toFixed(2)}
-                                  </span>
-                                )}
+                                {item.variants && item.variants.length > 0 ? (
+                                <span className="font-medium text-sm md:hidden">
+                                  {item.variants.map(v => `£${v.price.toFixed(2)}`).join(' / ')}
+                                </span>
+                              ) : item.price ? (
+                                <span className="font-medium text-sm md:hidden">
+                                  £{item.price.toFixed(2)}
+                                </span>
+                              ) : null}
                               </div>
                               {item.description && (
                                 <div className="text-sm text-muted-foreground line-clamp-2">
@@ -515,11 +529,15 @@ export default function MenuEditPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-                            {item.price && (
+                            {item.variants && item.variants.length > 0 ? (
+                              <div className="font-medium hidden md:block text-sm">
+                                {item.variants.map(v => `${v.label}: £${v.price.toFixed(2)}`).join(' / ')}
+                              </div>
+                            ) : item.price ? (
                               <div className="font-medium hidden md:block">
                                 £{item.price.toFixed(2)}
                               </div>
-                            )}
+                            ) : null}
                             <div className="flex gap-0.5 md:gap-1">
                               {/* Sold out toggle - hidden for now, uncomment if needed
                               <Button
@@ -547,6 +565,7 @@ export default function MenuEditPage() {
                                     price: item.price?.toString() || '',
                                     priceNote: item.priceNote || '',
                                     dietaryTags: item.dietaryTags || [],
+                                    variants: item.variants || [],
                                   });
                                   setItemDialog({
                                     open: true,
@@ -556,7 +575,7 @@ export default function MenuEditPage() {
                                   });
                                 }}
                               >
-                                <Save className="h-4 w-4" />
+                                <Pencil className="h-4 w-4" />
                               </Button>
                               <Button
                                 variant="ghost"
@@ -664,30 +683,121 @@ export default function MenuEditPage() {
                 placeholder="e.g. Served with crusty bread"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Price (£)</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={itemForm.price}
-                  onChange={(e) =>
-                    setItemForm({ ...itemForm, price: e.target.value })
-                  }
-                  placeholder="0.00"
-                />
+            {/* Price section - show either single price or variants */}
+            {itemForm.variants.length === 0 ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Price (£)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={itemForm.price}
+                      onChange={(e) =>
+                        setItemForm({ ...itemForm, price: e.target.value })
+                      }
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Price Note</Label>
+                    <Input
+                      value={itemForm.priceNote}
+                      onChange={(e) =>
+                        setItemForm({ ...itemForm, priceNote: e.target.value })
+                      }
+                      placeholder="e.g. per person"
+                    />
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setItemForm({
+                      ...itemForm,
+                      price: '',
+                      variants: [{ label: '', price: 0, isDefault: true }],
+                    });
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add size variants (e.g. Small/Large)
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label>Price Note</Label>
-                <Input
-                  value={itemForm.priceNote}
-                  onChange={(e) =>
-                    setItemForm({ ...itemForm, priceNote: e.target.value })
-                  }
-                  placeholder="e.g. per person"
-                />
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Price Variants</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setItemForm({ ...itemForm, variants: [] });
+                    }}
+                  >
+                    Use single price instead
+                  </Button>
+                </div>
+                {itemForm.variants.map((variant, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input
+                      value={variant.label}
+                      onChange={(e) => {
+                        const newVariants = [...itemForm.variants];
+                        newVariants[index] = { ...variant, label: e.target.value };
+                        setItemForm({ ...itemForm, variants: newVariants });
+                      }}
+                      placeholder="Label (e.g. Small)"
+                      className="flex-1"
+                    />
+                    <div className="relative w-24">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground">£</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={variant.price || ''}
+                        onChange={(e) => {
+                          const newVariants = [...itemForm.variants];
+                          newVariants[index] = { ...variant, price: parseFloat(e.target.value) || 0 };
+                          setItemForm({ ...itemForm, variants: newVariants });
+                        }}
+                        placeholder="0.00"
+                        className="pl-6"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0"
+                      onClick={() => {
+                        const newVariants = itemForm.variants.filter((_, i) => i !== index);
+                        setItemForm({ ...itemForm, variants: newVariants });
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setItemForm({
+                      ...itemForm,
+                      variants: [...itemForm.variants, { label: '', price: 0 }],
+                    });
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add variant
+                </Button>
               </div>
-            </div>
+            )}
             <div className="space-y-2">
               <Label>Dietary Tags</Label>
               <div className="flex flex-wrap gap-2">
