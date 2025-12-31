@@ -20,8 +20,6 @@ import {
   UtensilsCrossed,
   Clock,
   Building2,
-  BedDouble,
-  MapPin,
   LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,16 +44,6 @@ const menuItems = [
     title: 'Venue Info',
     url: '/admin/venue',
     icon: Building2,
-  },
-  {
-    title: 'Rooms',
-    url: '/admin/rooms',
-    icon: BedDouble,
-  },
-  {
-    title: 'Attractions',
-    url: '/admin/attractions',
-    icon: MapPin,
   },
 ];
 

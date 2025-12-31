@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/auth-context';
 import { getVenue, getMenus, Venue, Menu } from '@/lib/api';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { UtensilsCrossed, Clock, Building2, BedDouble, MapPin, ArrowRight } from 'lucide-react';
+import { UtensilsCrossed, Clock, Building2, ArrowRight } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -70,20 +70,6 @@ export default function DashboardPage() {
       icon: Building2,
       href: '/admin/venue',
       color: 'bg-green-500',
-    },
-    {
-      title: 'Rooms',
-      description: 'Manage accommodation listings',
-      icon: BedDouble,
-      href: '/admin/rooms',
-      color: 'bg-purple-500',
-    },
-    {
-      title: 'Attractions',
-      description: 'Local attractions for visitors',
-      icon: MapPin,
-      href: '/admin/attractions',
-      color: 'bg-pink-500',
     },
   ];
 
