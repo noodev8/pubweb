@@ -16,10 +16,13 @@ const sourceSans = Source_Sans_3({
   display: 'swap',
 })
 
-export const metadata: Metadata = {
-  title: 'The Nags Head Inn | Garthmyl, Montgomery',
-  description:
-    'A Grade 2 listed former coaching inn offering award-winning dining and luxury 5-star accommodation in the heart of the Welsh countryside.',
+export async function generateMetadata(): Promise<Metadata> {
+  const venue = await getVenueInfo()
+  return {
+    title: `${venue.name} | Garthmyl, Montgomery`,
+    description:
+      'A Grade 2 listed former coaching inn offering award-winning dining and luxury 5-star accommodation in the heart of the Welsh countryside.',
+  }
 }
 
 export default async function RootLayout({

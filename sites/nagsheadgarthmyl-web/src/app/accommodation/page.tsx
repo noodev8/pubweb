@@ -2,14 +2,17 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { AccommodationHeroCarousel } from '@/components/accommodation'
 import { HexagonPattern } from '@/components/ui'
+import { getVenueInfo } from '@/lib/services/venue'
 
-export default function AccommodationPage() {
+export default async function AccommodationPage() {
+  const venue = await getVenueInfo()
+
   return (
     <div className="-mt-24 lg:-mt-28">
       {/* Hero - 16:9 with min-height for mobile */}
       <section className="relative bg-stone-900 text-white">
         <div className="relative aspect-[16/9] min-h-[400px] sm:min-h-[450px]">
-          <AccommodationHeroCarousel />
+          <AccommodationHeroCarousel venueName={venue.name} />
           <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/70 via-stone-900/30 to-transparent" />
 
           <div className="absolute bottom-0 left-0 right-0 pb-20 sm:pb-28 lg:pb-36">
@@ -35,7 +38,7 @@ export default function AccommodationPage() {
               five stars from both the AA & Visit Wales every year since 2016.
             </p>
             <p className="text-stone-600 text-lg mb-6">
-              At The Nags Head Inn you will find eight ensuite bedrooms. Several of which
+              At {venue.name} you will find eight ensuite bedrooms. Several of which
               were designed previously by the world renowned Laura Ashley&apos;s furnishings.
               With superking beds and large walk-in showers you get to enjoy both comfort
               and luxury during your stay.
@@ -166,7 +169,7 @@ export default function AccommodationPage() {
               Or Just a Getaway
             </h2>
             <p className="text-stone-600 text-lg mb-6">
-              Located on the A483, The Nags Head Inn is both easy to get to and your gateway
+              Located on the A483, {venue.name} is both easy to get to and your gateway
               to all of the unspoilt countryside Mid Wales has to offer. There are a number
               of wonderful activities right on our doorstep.
             </p>
@@ -191,7 +194,7 @@ export default function AccommodationPage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-4">Amenities</h2>
             <p className="text-stone-600 max-w-2xl mx-auto">
-              Here at The Nags Head Inn we want to take all the stress out of travelling
+              Here at {venue.name} we want to take all the stress out of travelling
               by making sure you have everything you need at your disposal.
             </p>
           </div>

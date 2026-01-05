@@ -3,22 +3,26 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
-const heroImages = [
-  {
-    src: '/images/bedroom1-1920x1080.jpg',
-    alt: 'Luxury bedroom at The Nags Head Inn',
-  },
-  {
-    src: '/images/bedroom2-1920x1080.jpg',
-    alt: 'Elegant ensuite bedroom with Laura Ashley furnishings',
-  },
-  {
-    src: '/images/bedroom3-1920x1080.jpg',
-    alt: 'Comfortable accommodation at The Nags Head',
-  },
-]
+interface AccommodationHeroCarouselProps {
+  venueName: string
+}
 
-export function AccommodationHeroCarousel() {
+export function AccommodationHeroCarousel({ venueName }: AccommodationHeroCarouselProps) {
+  const heroImages = [
+    {
+      src: '/images/bedroom1-1920x1080.jpg',
+      alt: `Luxury bedroom at ${venueName}`,
+    },
+    {
+      src: '/images/bedroom2-1920x1080.jpg',
+      alt: 'Elegant ensuite bedroom with Laura Ashley furnishings',
+    },
+    {
+      src: '/images/bedroom3-1920x1080.jpg',
+      alt: `Comfortable accommodation at ${venueName}`,
+    },
+  ]
+
   const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
@@ -27,7 +31,7 @@ export function AccommodationHeroCarousel() {
     }, 6000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [heroImages.length])
 
   return (
     <>
@@ -38,9 +42,7 @@ export function AccommodationHeroCarousel() {
           alt={image.alt}
           fill
           priority={index === 0}
-          className={`object-cover transition-opacity duration-1000 ${
-            index === currentIndex ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`object-cover transition-opacity duration-1000 ${index === currentIndex ? "opacity-100" : "opacity-0"}`}
         />
       ))}
     </>

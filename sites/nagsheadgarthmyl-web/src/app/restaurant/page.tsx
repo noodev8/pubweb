@@ -2,8 +2,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { HexagonPattern } from '@/components/ui'
 import { siteConfig } from '@/lib/config'
+import { getVenueInfo } from '@/lib/services/venue'
 
-export default function RestaurantPage() {
+export default async function RestaurantPage() {
+  const venue = await getVenueInfo()
+
   return (
     <div className="-mt-24 lg:-mt-28">
       {/* Hero - 16:9 with min-height for mobile */}
@@ -11,7 +14,7 @@ export default function RestaurantPage() {
         <div className="relative aspect-[16/9] min-h-[400px] sm:min-h-[450px]">
           <Image
             src="/images/restaurant-header-1920x1080.jpg"
-            alt="The Nags Head Restaurant"
+            alt={`${venue.name} Restaurant`}
             fill
             priority
             className="object-cover"
@@ -43,7 +46,7 @@ export default function RestaurantPage() {
               and a beautiful terraced garden.
             </p>
             <p className="text-stone-600 text-lg">
-              At The Nags Head Inn we try at all times to source the best local produce,
+              At {venue.name} we try at all times to source the best local produce,
               fresh to us six days a week. We strive to always provide the best quality
               our area has to offer. Our 5★ awards and Rosette for our restaurant have
               been awarded to us for sourcing the best local produce, for preparing all
@@ -62,7 +65,7 @@ export default function RestaurantPage() {
               <div className="relative aspect-[4/3] z-10">
                 <Image
                   src="/images/restaurant.jpg"
-                  alt="The Nags Head restaurant interior"
+                  alt={`${venue.name} restaurant interior`}
                   fill
                   className="object-cover"
                 />
@@ -124,7 +127,7 @@ export default function RestaurantPage() {
               <div className="relative aspect-[4/3] z-10">
                 <Image
                   src="/images/bar-seating-800x600.jpg"
-                  alt="Bar seating at The Nags Head"
+                  alt={`Bar seating at ${venue.name}`}
                   fill
                   className="object-cover"
                 />

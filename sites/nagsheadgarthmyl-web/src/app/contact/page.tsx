@@ -11,7 +11,7 @@ export default async function ContactPage() {
         <div className="relative h-64 sm:h-80 lg:h-96">
           <Image
             src="/images/hero-1.jpg"
-            alt="The Nags Head Inn at night"
+            alt={`${venue.name} at night`}
             fill
             priority
             className="object-cover"
@@ -198,7 +198,7 @@ export default async function ContactPage() {
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title="The Nags Head Inn location map"
+          title={`${venue.name} location map`}
         />
       </section>
     </div>

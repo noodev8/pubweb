@@ -3,18 +3,22 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
-const heroImages = [
-  {
-    src: '/images/hero-1.jpg',
-    alt: 'The Nags Head Inn at night',
-  },
-  {
-    src: '/images/hero-2.jpg',
-    alt: 'The Nags Head Inn exterior',
-  },
-]
+interface HeroCarouselProps {
+  venueName: string
+}
 
-export function HeroCarousel() {
+export function HeroCarousel({ venueName }: HeroCarouselProps) {
+  const heroImages = [
+    {
+      src: '/images/hero-1.jpg',
+      alt: `${venueName} at night`,
+    },
+    {
+      src: '/images/hero-2.jpg',
+      alt: `${venueName} exterior`,
+    },
+  ]
+
   const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
@@ -23,7 +27,7 @@ export function HeroCarousel() {
     }, 6000) // Change image every 6 seconds
 
     return () => clearInterval(interval)
-  }, [])
+  }, [heroImages.length])
 
   return (
     <>
@@ -34,9 +38,7 @@ export function HeroCarousel() {
           alt={image.alt}
           fill
           priority={index === 0}
-          className={`object-cover transition-opacity duration-1000 ${
-            index === currentIndex ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`object-cover transition-opacity duration-1000 ${index === currentIndex ? "opacity-100" : "opacity-0"}`}
         />
       ))}
     </>

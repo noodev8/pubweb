@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { ExploreHeroCarousel } from '@/components/explore'
 import { HexagonPattern } from '@/components/ui'
+import { getVenueInfo } from '@/lib/services/venue'
 
 type Attraction = {
   name: string
@@ -97,7 +98,9 @@ const gardenCentres: Attraction[] = [
   },
 ]
 
-export default function ExplorePage() {
+export default async function ExplorePage() {
+  const venue = await getVenueInfo()
+
   return (
     <div className="-mt-24 lg:-mt-28">
       {/* Hero - 16:9 with min-height for mobile */}
@@ -205,7 +208,7 @@ export default function ExplorePage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-serif mb-4">Getting Here</h2>
             <p className="text-stone-300 max-w-2xl mx-auto">
-              The Nags Head is situated in the village of Garthmyl, just off the
+              {venue.name} is situated in the village of Garthmyl, just off the
               A483 between Welshpool and Newtown.
             </p>
           </div>

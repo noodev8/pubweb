@@ -3,22 +3,24 @@ import Image from 'next/image'
 import { HeroCarousel } from '@/components/home'
 import { HexagonPattern } from '@/components/ui'
 import { siteConfig } from '@/lib/config'
+import { getVenueInfo } from '@/lib/services/venue'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const venue = await getVenueInfo()
 
   return (
     <div className="-mt-24 lg:-mt-28">
       {/* Hero Section - 16:9 with min-height for mobile */}
       <section className="relative bg-stone-900 text-white">
         <div className="relative aspect-[16/9] min-h-[400px] sm:min-h-[450px]">
-          <HeroCarousel />
+          <HeroCarousel venueName={venue.name} />
           <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/60 via-transparent to-transparent" />
 
           <div className="absolute bottom-0 left-0 right-0 pb-20 sm:pb-28 lg:pb-36">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="max-w-xl">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white mb-4 drop-shadow-lg">
-                  The Nags Head Inn,
+                  {venue.name},
                   <br />
                   Garthmyl
                 </h1>
@@ -45,7 +47,7 @@ export default function HomePage() {
               A Traditional Coaching Inn at the Heart of the Welsh Marches
             </h2>
             <p className="text-stone-600 text-lg mb-4">
-              The Nags Head is a Grade 2 listed former coaching inn, offering AA Rosette award-winning
+              {venue.name} is a Grade 2 listed former coaching inn, offering AA Rosette award-winning
               dining and 5-star accommodation. Set in the picturesque village of Garthmyl, we combine
               traditional hospitality with contemporary comfort.
             </p>
@@ -67,7 +69,7 @@ export default function HomePage() {
               <div className="relative aspect-[4/3] overflow-hidden z-10">
                 <Image
                   src="/images/restaurant.jpg"
-                  alt="The Nags Head restaurant interior"
+                  alt={`${venue.name} restaurant interior`}
                   fill
                   className="object-cover"
                 />
@@ -115,7 +117,7 @@ export default function HomePage() {
               </p>
               <p className="text-stone-600 mb-6">
                 Whether you&apos;re visiting for business, shooting locally, seeing family, or
-                exploring the unspoilt countryside, The Nags Head provides an ideal base for
+                exploring the unspoilt countryside, {venue.name} provides an ideal base for
                 your stay in Mid Wales.
               </p>
               <a
@@ -153,7 +155,7 @@ export default function HomePage() {
               Explore the Area
             </h2>
             <p className="text-stone-600 max-w-2xl mx-auto text-lg">
-              Situated on the A483, The Nags Head is perfectly placed for exploring the stunning
+              Situated on the A483, {venue.name} is perfectly placed for exploring the stunning
               Welsh countryside, with the Montgomeryshire Canal running a mere 20 yards from our door.
             </p>
           </div>

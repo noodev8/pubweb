@@ -1,9 +1,9 @@
 import Image from 'next/image'
-import { getRegularMenus } from '@/lib/services/venue'
+import { getRegularMenus, getVenueInfo } from '@/lib/services/venue'
 import { MenusAccordion } from './MenusAccordion'
 
 export default async function MenusPage() {
-  const menus = await getRegularMenus()
+  const [menus, venue] = await Promise.all([getRegularMenus(), getVenueInfo()])
 
   return (
     <div className="-mt-24 lg:-mt-28">
@@ -12,7 +12,7 @@ export default async function MenusPage() {
         <div className="relative aspect-[16/9] min-h-[400px] sm:min-h-[450px]">
           <Image
             src="/images/restaurant-header-1920x1080.jpg"
-            alt="The Nags Head Restaurant"
+            alt={`${venue.name} Restaurant`}
             fill
             priority
             className="object-cover"
