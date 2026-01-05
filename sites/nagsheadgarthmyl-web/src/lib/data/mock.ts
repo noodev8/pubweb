@@ -20,7 +20,7 @@ import {
 // =============================================================================
 
 export const mockVenueInfo: VenueInfo = {
-  name: 'Nags Head Test',
+  name: 'The Nags Head Inn',
   tagline: 'A Grade 2 listed former coaching inn',
   description:
     'Nestled in the heart of Garthmyl, Montgomery, The Nags Head Inn is a beautiful Grade 2 listed former coaching inn offering award-winning dining and luxury accommodation.',
