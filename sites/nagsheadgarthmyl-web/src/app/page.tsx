@@ -226,22 +226,15 @@ export default async function HomePage() {
               className="h-20 w-auto"
             />
             <Image
-              src="/images/award-aa-inn.jpg"
-              alt="AA 5 Star Inn 2022"
+              src="/images/AA-GAC-INN-5STAR.png"
+              alt="AA 5 Star Inn"
               width={100}
               height={100}
               className="h-20 w-auto"
             />
             <Image
-              src="/images/award-aa-rosette.jpg"
-              alt="AA Rosette Award for Culinary Excellence 2022"
-              width={100}
-              height={100}
-              className="h-20 w-auto"
-            />
-            <Image
-              src="/images/award-aa-breakfast.jpg"
-              alt="AA Breakfast Award 2022"
+              src="/images/AA-1-Rosette-2025.png"
+              alt="AA 1 Rosette Award 2025"
               width={100}
               height={100}
               className="h-20 w-auto"
