@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { getRegularMenus, getVenueInfo } from '@/lib/services/venue'
-import { MenusAccordion } from './MenusAccordion'
+import { MenuImageGallery } from './MenuImageGallery'
 
 export default async function MenusPage() {
   const [menus, venue] = await Promise.all([getRegularMenus(), getVenueInfo()])
@@ -32,39 +32,10 @@ export default async function MenusPage() {
         </div>
       </section>
 
-      {/* Dietary Key */}
-      <section className="bg-stone-100 py-4">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <span className="text-stone-600">
-              <span className="font-medium">V</span> Vegetarian
-            </span>
-            <span className="text-stone-600">
-              <span className="font-medium">VE</span> Vegan
-            </span>
-            <span className="text-stone-600">
-              <span className="font-medium">GF</span> Gluten Free
-            </span>
-            <span className="text-stone-600">
-              <span className="font-medium">DF</span> Dairy Free
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Menus */}
-      <section className="py-16 lg:py-24">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          {menus.length > 0 ? (
-            <MenusAccordion menus={menus} />
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-stone-600">
-                Menus are currently being updated. Please check back soon or
-                contact us for details.
-              </p>
-            </div>
-          )}
+      {/* Menus Gallery */}
+      <section className="py-16 lg:py-24 bg-stone-50">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <MenuImageGallery menus={menus} />
         </div>
       </section>
 
