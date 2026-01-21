@@ -68,6 +68,12 @@ export default function LoginPage() {
               {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
+          <p className="text-center text-sm text-muted-foreground mt-4">
+            Need help? Contact{' '}
+            <a href="mailto:noodev8@gmail.com" className="underline hover:text-primary">
+              noodev8@gmail.com
+            </a>
+          </p>
         </CardContent>
       </Card>
     </div>
