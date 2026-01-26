@@ -52,7 +52,7 @@ function MenuCard({ menu, onImageClick }: { menu: Menu; onImageClick: () => void
       {menu.pdfUrl && (
         <div className="p-4 border-t border-stone-100">
           <a
-            href={menu.pdfUrl.replace('/raw/upload/', '/raw/upload/fl_attachment/')}
+            href={menu.pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-amber-600 hover:text-amber-700 transition-colors"

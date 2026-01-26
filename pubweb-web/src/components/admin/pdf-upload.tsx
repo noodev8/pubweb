@@ -92,12 +92,8 @@ export function PdfUpload({ currentPdfUrl, onUpload, onRemove }: PdfUploadProps)
     }
   };
 
-  // Convert Cloudinary URL to force download
-  const getDownloadUrl = (url: string) => {
-    // Add fl_attachment flag to Cloudinary raw URLs to force download
-    // e.g., /raw/upload/v123/ becomes /raw/upload/fl_attachment/v123/
-    return url.replace('/raw/upload/', '/raw/upload/fl_attachment/');
-  };
+  // Get download URL - just use the original URL, browser will download PDFs
+  const getDownloadUrl = (url: string) => url;
 
   return (
     <div className="space-y-3">
