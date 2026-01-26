@@ -86,9 +86,12 @@ export default function MenusPage() {
     const currentMenu = sortedMenus[currentIndex];
     const targetMenu = sortedMenus[targetIndex];
 
-    // Swap sort orders
-    await updateMenu(parseInt(currentMenu.id), { sortOrder: targetMenu.sortOrder });
-    await updateMenu(parseInt(targetMenu.id), { sortOrder: currentMenu.sortOrder });
+    // Assign new sequential sort orders to ensure they're different
+    const newCurrentSortOrder = targetIndex;
+    const newTargetSortOrder = currentIndex;
+
+    await updateMenu(parseInt(currentMenu.id), { sortOrder: newCurrentSortOrder });
+    await updateMenu(parseInt(targetMenu.id), { sortOrder: newTargetSortOrder });
     loadMenus();
   };
 
@@ -232,10 +235,12 @@ export default function MenusPage() {
                 </div>
               </CardHeader>
               <CardContent>
+                {/* Hidden while using image-based menus
                 <div className="text-sm text-muted-foreground mb-4">
                   {menu.sections.length} sections,{' '}
                   {menu.sections.reduce((a, s) => a + s.items.length, 0)} items
                 </div>
+                */}
                 <div className="flex gap-2">
                   <Link href={`/admin/menus/${menu.id}`} className="flex-1">
                     <Button variant="outline" className="w-full">

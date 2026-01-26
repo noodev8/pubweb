@@ -43,6 +43,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { ImageUpload } from '@/components/admin/image-upload';
+import { PdfUpload } from '@/components/admin/pdf-upload';
 
 export default function MenuEditPage() {
   const params = useParams();
@@ -228,6 +229,24 @@ export default function MenuEditPage() {
     }
   };
 
+  const handlePdfUpload = async (pdfUrl: string) => {
+    const res = await updateMenu(menuId, { pdfUrl });
+    if (res.return_code === 'SUCCESS') {
+      loadMenu();
+    } else {
+      toast.error(res.message || 'Failed to save PDF');
+    }
+  };
+
+  const handlePdfRemove = async () => {
+    const res = await updateMenu(menuId, { pdfUrl: '' });
+    if (res.return_code === 'SUCCESS') {
+      loadMenu();
+    } else {
+      toast.error(res.message || 'Failed to remove PDF');
+    }
+  };
+
   const handleMoveSection = async (sectionId: string, direction: 'up' | 'down') => {
     if (!menu) return;
     const sortedSections = [...menu.sections].sort((a, b) => a.sortOrder - b.sortOrder);
@@ -351,10 +370,30 @@ export default function MenuEditPage() {
             onUpload={handleImageUpload}
             onRemove={handleImageRemove}
           />
+          <p className="text-sm text-muted-foreground mt-2">
+            This image is displayed on the website as a preview of your menu.
+          </p>
         </CardContent>
       </Card>
 
-      {/* Sections */}
+      {/* Menu PDF */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Menu PDF</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PdfUpload
+            currentPdfUrl={menu.pdfUrl}
+            onUpload={handlePdfUpload}
+            onRemove={handlePdfRemove}
+          />
+          <p className="text-sm text-muted-foreground mt-2">
+            Optional: Upload a PDF for customers to download the full menu.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Text-based menu sections - hidden for now, using image upload only
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Sections</h2>
         <Button
@@ -497,11 +536,6 @@ export default function MenuEditPage() {
                             <div className="min-w-0 flex-1">
                               <div className="font-medium flex flex-wrap items-center gap-2">
                                 <span className="truncate">{item.name}</span>
-                                {/* Sold out badge - hidden for now, uncomment if needed
-                                {!item.isAvailable && (
-                                  <Badge variant="destructive" className="text-xs">Sold out</Badge>
-                                )}
-                                */}
                                 {item.variants && item.variants.length > 0 ? (
                                 <span className="font-medium text-sm md:hidden">
                                   {item.variants.map(v => `£${v.price.toFixed(2)}`).join(' / ')}
@@ -539,21 +573,6 @@ export default function MenuEditPage() {
                               </div>
                             ) : null}
                             <div className="flex gap-0.5 md:gap-1">
-                              {/* Sold out toggle - hidden for now, uncomment if needed
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => handleToggleAvailability(item.id)}
-                                title={item.isAvailable ? 'Mark as sold out' : 'Mark as available'}
-                              >
-                                {item.isAvailable ? (
-                                  <Ban className="h-4 w-4" />
-                                ) : (
-                                  <Check className="h-4 w-4" />
-                                )}
-                              </Button>
-                              */}
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -598,7 +617,6 @@ export default function MenuEditPage() {
         </div>
       )}
 
-      {/* Section Dialog */}
       <Dialog
         open={sectionDialog.open}
         onOpenChange={(open) => setSectionDialog({ ...sectionDialog, open })}
@@ -651,7 +669,6 @@ export default function MenuEditPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Item Dialog */}
       <Dialog
         open={itemDialog.open}
         onOpenChange={(open) => setItemDialog({ ...itemDialog, open })}
@@ -683,7 +700,6 @@ export default function MenuEditPage() {
                 placeholder="e.g. Served with crusty bread"
               />
             </div>
-            {/* Price section - show either single price or variants */}
             {itemForm.variants.length === 0 ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -849,6 +865,7 @@ export default function MenuEditPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      End of text-based menu sections */}
     </div>
   );
 }
