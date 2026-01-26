@@ -1,13 +1,31 @@
+/*
+=======================================================================================================================================
+API Route: menu-pdf/[id]
+=======================================================================================================================================
+Method: GET
+Purpose: Proxies PDF files from Cloudinary to serve with correct headers for browser viewing.
+         This is a file-serving endpoint, not a JSON API - returns binary PDF data on success.
+=======================================================================================================================================
+Request: GET /api/menu-pdf/123
+
+Success Response: Binary PDF data with headers:
+  - Content-Type: application/pdf
+  - Content-Disposition: inline; filename="Menu-Name.pdf"
+
+Error Response: Redirects to /menus page (since browser expects a file, not JSON)
+=======================================================================================================================================
+*/
+
 import { NextRequest, NextResponse } from 'next/server'
 
 const API_URL = process.env.API_URL || 'http://localhost:3017'
-const VENUE_ID = process.env.VENUE_ID || '1'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  const menusPageUrl = '/menus'
 
   try {
     // Fetch menu data from API to get the PDF URL
@@ -19,53 +37,46 @@ export async function GET(
 
     const menuData = await menuResponse.json()
 
+    // Check if menu and PDF exist
     if (menuData.return_code !== 'SUCCESS' || !menuData.menu?.pdfUrl) {
-      return NextResponse.json(
-        { error: 'Menu or PDF not found' },
-        { status: 404 }
-      )
+      // Redirect to menus page - PDF not available
+      return NextResponse.redirect(new URL(menusPageUrl, request.url))
     }
 
     const pdfUrl = menuData.menu.pdfUrl
 
-    // Validate it's a Cloudinary URL (security check)
+    // Security: Only allow Cloudinary URLs
     if (!pdfUrl.includes('cloudinary.com')) {
-      return NextResponse.json(
-        { error: 'Invalid PDF source' },
-        { status: 400 }
-      )
+      console.error('Invalid PDF source attempted:', pdfUrl)
+      return NextResponse.redirect(new URL(menusPageUrl, request.url))
     }
 
     // Fetch the PDF from Cloudinary
     const pdfResponse = await fetch(pdfUrl)
 
     if (!pdfResponse.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch PDF' },
-        { status: 502 }
-      )
+      console.error('Failed to fetch PDF from Cloudinary:', pdfResponse.status)
+      return NextResponse.redirect(new URL(menusPageUrl, request.url))
     }
 
     // Get the PDF as an ArrayBuffer
     const pdfBuffer = await pdfResponse.arrayBuffer()
 
-    // Extract filename from menu name for the download
+    // Create safe filename from menu name
     const filename = `${menuData.menu.name.replace(/[^a-zA-Z0-9]/g, '-')}.pdf`
 
-    // Return with correct headers
+    // Return PDF with correct headers (HTTP 200)
     return new NextResponse(pdfBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename="${filename}"`,
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=3600',
       },
     })
   } catch (error) {
+    // Log error and redirect to menus page
     console.error('Error proxying PDF:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.redirect(new URL(menusPageUrl, request.url))
   }
 }
