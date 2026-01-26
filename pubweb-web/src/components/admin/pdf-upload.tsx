@@ -34,16 +34,16 @@ export function PdfUpload({ currentPdfUrl, onUpload, onRemove }: PdfUploadProps)
     setIsUploading(true);
 
     try {
-      // Upload to Cloudinary (raw upload for PDFs)
+      // Upload to Cloudinary as image type (Cloudinary supports PDFs as images)
+      // This ensures proper Content-Type headers when serving the file
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '');
       formData.append('folder', 'pubweb/menus/pdf');
-      formData.append('resource_type', 'raw');
 
       const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`,
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
         {
           method: 'POST',
           body: formData,
