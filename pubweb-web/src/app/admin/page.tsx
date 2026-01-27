@@ -44,15 +44,16 @@ export default function DashboardPage() {
   }
 
   const activeMenus = menus.filter((m) => m.isActive).length;
-  const totalItems = menus.reduce(
-    (acc, menu) => acc + menu.sections.reduce((a, s) => a + s.items.length, 0),
-    0
-  );
+  // Hidden while using image-based menus
+  // const totalItems = menus.reduce(
+  //   (acc, menu) => acc + menu.sections.reduce((a, s) => a + s.items.length, 0),
+  //   0
+  // );
 
   const quickLinks = [
     {
       title: 'Menus',
-      description: `${activeMenus} active menus, ${totalItems} items`,
+      description: `${activeMenus} active menu${activeMenus !== 1 ? 's' : ''}`,
       icon: UtensilsCrossed,
       href: '/admin/menus',
       color: 'bg-orange-500',

@@ -50,14 +50,17 @@ function MenuCard({ menu, onImageClick }: { menu: Menu; onImageClick: () => void
 
       {/* PDF download link if available */}
       {menu.pdfUrl && (
-        <div className="p-4 border-t border-stone-100">
+        <div className="p-4 border-t border-stone-100 bg-stone-50">
           <a
             href={`/api/menu-pdf/${menu.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors font-medium text-sm"
           >
-            Download PDF version →
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Download Full Menu (PDF)
           </a>
         </div>
       )}
