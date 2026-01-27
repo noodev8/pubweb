@@ -37,9 +37,9 @@ export default async function RootLayout({
   ])
 
   return (
-    <html lang="en">
+    <html lang="en" className="overflow-x-hidden">
       <body
-        className={`${playfair.variable} ${sourceSans.variable} font-sans antialiased bg-stone-50 text-stone-900`}
+        className={`${playfair.variable} ${sourceSans.variable} font-sans antialiased bg-stone-50 text-stone-900 overflow-x-hidden`}
       >
         <div className="flex min-h-screen flex-col">
           <Header

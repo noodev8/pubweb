@@ -10,7 +10,7 @@ export default async function RestaurantPage() {
   return (
     <div className="-mt-24 lg:-mt-28">
       {/* Hero - 16:9 with min-height for mobile */}
-      <section className="relative bg-stone-900 text-white">
+      <section className="relative bg-stone-900 text-white overflow-hidden">
         <div className="relative aspect-[16/9] min-h-[400px] sm:min-h-[450px]">
           <Image
             src="/images/restaurant-header-1920x1080.jpg"
@@ -26,7 +26,7 @@ export default async function RestaurantPage() {
               <div className="max-w-xl">
                 <p className="text-white/80 text-lg sm:text-xl mb-2">Restaurant</p>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white drop-shadow-lg">
-                  High Quality Homemade Food
+                  Quality Homemade<br />Food
                 </h1>
               </div>
             </div>
