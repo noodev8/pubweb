@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { AccommodationHeroCarousel } from '@/components/accommodation'
 import { HexagonPattern } from '@/components/ui'
 import { getVenueInfo } from '@/lib/services/venue'
+import { siteConfig } from '@/lib/config'
 
 export default async function AccommodationPage() {
   const venue = await getVenueInfo()
@@ -70,6 +71,126 @@ export default async function AccommodationPage() {
         </div>
       </section>
 
+      {/* Our Rooms */}
+      <section className="py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">Our Rooms</h2>
+            <p className="text-stone-600 text-lg max-w-3xl mx-auto">
+              Each of our eight ensuite bedrooms has its own unique character, blending
+              the heritage of our Grade II listed coaching inn with modern comfort.
+              Exposed oak beams, original wooden floors and elegant furnishings
+              ensure every room tells its own story.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="sm:col-span-2 lg:col-span-3 relative h-64 sm:h-72 lg:h-96 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-3.jpg"
+                alt="Spacious bedroom with exposed oak beams and period furnishings"
+                fill
+                priority
+                className="object-cover"
+              />
+            </div>
+            <div className="lg:col-span-2 relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-5.jpg"
+                alt="Elegant room with chandelier and Laura Ashley furnishings"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-1.jpg"
+                alt="Cosy bedroom with deep burgundy walls and skylight"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-6.jpg"
+                alt="Contemporary room with slate grey walls and walk-in shower"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-7.jpg"
+                alt="Light-filled room with exposed oak beams and cream furnishings"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-8.jpg"
+                alt="Warm bedroom with burgundy accent wall and Smart TV"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-9.jpg"
+                alt="Modern ensuite bathroom with walk-in shower"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="lg:col-span-2 relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-10.jpg"
+                alt="Character bedroom with original curved oak beam"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-2.jpg"
+                alt="Classic room with floral armchair and ornate mirror"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-11.jpg"
+                alt="Atmospheric room with dormer window and dressing table"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="relative h-56 lg:h-72 overflow-hidden">
+              <Image
+                src="/images/accomodation/accomodation-4.jpg"
+                alt="Quilted bedspread and floral armchair detail"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="text-center mt-12">
+            <p className="text-stone-600 text-lg max-w-2xl mx-auto mb-8">
+              Superking beds, large walk-in showers and thoughtful touches throughout
+              — everything you need for a truly restful stay.
+            </p>
+            <a
+              href={siteConfig.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-8 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
+            >
+              Stay with Us
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Call to Book */}
       <section className="py-16 lg:py-20 bg-[#7A1B1B] text-white">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
@@ -122,45 +243,6 @@ export default async function AccommodationPage() {
         </div>
       </section>
 
-      {/* Game Shooting Section */}
-      <section className="py-16 lg:py-24 bg-stone-100 overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="relative order-2 lg:order-1">
-              <HexagonPattern className="absolute -left-16 -top-16 w-64 h-64 opacity-60 hidden lg:block" />
-              <div className="relative aspect-[4/3] z-10">
-                <Image
-                  src="/images/attraction-1.jpg"
-                  alt="Red Deer Stag in Front of Powis Castle"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <HexagonPattern className="absolute -right-8 -bottom-12 w-48 h-48 opacity-60 hidden lg:block" />
-            </div>
-            <div className="order-1 lg:order-2">
-              <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">Game Shooting</h2>
-              <p className="text-stone-600 mb-4">
-                Our Inn is the perfect retreat after a cold day&apos;s shoot, warm by the fire
-                with a glass of port, indulge in a home cooked award winning dinner — the
-                options to round off a successful day are endless.
-              </p>
-              <ul className="text-stone-600 space-y-2 mb-4">
-                <li>Bettws Hall & Vaynor Park — a stones throw away, just &lsquo;over the hill&rsquo;, a 10 minute drive</li>
-                <li>Maesmawr Hall/Pool & Plas Dinam — only a 20 minute drive away</li>
-                <li>Kempton (Shropshire) — around 25 minutes over the border</li>
-                <li>Brigands — around 45 minutes north, half way towards the coast</li>
-              </ul>
-              <p className="text-stone-600">
-                Please contact us directly if you&apos;d like to book accommodation and we will
-                be happy to help you, including any early check ins required if you&apos;re
-                travelling up before your day&apos;s shoot.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Just a Getaway Section */}
       <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -178,12 +260,14 @@ export default async function AccommodationPage() {
               and the beautiful Montgomeryshire Canal running a mere 20 yards from our front
               door — you are sure to find plenty to do nearby.
             </p>
-            <Link
-              href="/explore"
+            <a
+              href={siteConfig.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
             >
-              Explore the Area
-            </Link>
+              Stay with Us
+            </a>
           </div>
         </div>
       </section>
@@ -275,12 +359,14 @@ export default async function AccommodationPage() {
               >
                 View Menus
               </Link>
-              <Link
-                href="/explore"
+              <a
+                href={siteConfig.bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
               >
-                Explore the Area
-              </Link>
+                Stay with Us
+              </a>
             </div>
           </div>
         </div>

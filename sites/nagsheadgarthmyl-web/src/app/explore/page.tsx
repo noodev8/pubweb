@@ -86,6 +86,25 @@ const activities: Attraction[] = [
   },
 ]
 
+const gameShooting: Attraction[] = [
+  {
+    name: 'Bettws Hall & Vaynor Park',
+    description: "A stones throw away, just 'over the hill', a 10 minute drive.",
+  },
+  {
+    name: 'Maesmawr Hall/Pool & Plas Dinam',
+    description: 'Only a 20 minute drive away.',
+  },
+  {
+    name: 'Kempton (Shropshire)',
+    description: 'Around 25 minutes over the border.',
+  },
+  {
+    name: 'Brigands',
+    description: 'Around 45 minutes north, half way towards the coast.',
+  },
+]
+
 const gardenCentres: Attraction[] = [
   {
     name: 'Kings Nurseries, Garthmyl',
@@ -190,8 +209,46 @@ export default async function ExplorePage() {
         </div>
       </section>
 
+      {/* Game Shooting */}
+      <section className="py-16 lg:py-24 bg-stone-100 overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div className="relative order-2 lg:order-1">
+              <HexagonPattern className="absolute -left-16 -top-16 w-64 h-64 opacity-60 hidden lg:block" />
+              <div className="relative aspect-[4/3] z-10">
+                <Image
+                  src="/images/attraction-1.jpg"
+                  alt="Red Deer Stag in Front of Powis Castle"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <HexagonPattern className="absolute -right-8 -bottom-12 w-48 h-48 opacity-60 hidden lg:block" />
+            </div>
+            <div className="order-1 lg:order-2">
+              <h2 className="text-3xl font-serif text-stone-900 mb-6">Game Shooting</h2>
+              <p className="text-stone-600 mb-6">
+                Our Inn is the perfect retreat after a cold day&apos;s shoot, warm by the fire
+                with a glass of port, indulge in a home cooked award winning dinner — the
+                options to round off a successful day are endless.
+              </p>
+              <div className="space-y-6">
+                {gameShooting.map((item) => (
+                  <AttractionCard key={item.name} attraction={item} />
+                ))}
+              </div>
+              <p className="text-stone-600 mt-6">
+                Please contact us directly if you&apos;d like to book accommodation and we will
+                be happy to help you, including any early check ins required if you&apos;re
+                travelling up before your day&apos;s shoot.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Garden Centres */}
-      <section className="py-16 lg:py-24 bg-stone-100">
+      <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-serif text-stone-900 mb-8 text-center">Garden Centres</h2>
           <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
