@@ -8,12 +8,12 @@ import 'yet-another-react-lightbox/styles.css'
 const galleryImages = [
   { src: '/images/gallery/restaurant.jpg', alt: 'Restaurant dining area' },
   { src: '/images/gallery/bedroom.jpg', alt: 'Luxury bedroom' },
-  { src: '/images/gallery/Nags-Back-Room.jpg', alt: 'Back room with fireplace' },
-  { src: '/images/gallery/Nags-Bedroom2.jpg', alt: 'Bedroom suite' },
-  { src: '/images/gallery/Nags-Bedroom4.jpg', alt: 'Comfortable bedroom' },
-  { src: '/images/gallery/Nags-Open-All-Day.jpg', alt: 'Open all day dining' },
-  { src: '/images/gallery/Nags-Pet-Dining.jpg', alt: 'Pet friendly dining area' },
-  { src: '/images/gallery/Nags-PostBox.jpg', alt: 'Traditional red postbox' },
+  { src: '/images/gallery/nags-back-room.jpg', alt: 'Back room with fireplace' },
+  { src: '/images/gallery/nags-bedroom2.jpg', alt: 'Bedroom suite' },
+  { src: '/images/gallery/nags-bedroom4.jpg', alt: 'Comfortable bedroom' },
+  { src: '/images/gallery/nags-open-all-day.jpg', alt: 'Open all day dining' },
+  { src: '/images/gallery/nags-pet-dining.jpg', alt: 'Pet friendly dining area' },
+  { src: '/images/gallery/nags-postbox.jpg', alt: 'Traditional red postbox' },
 ]
 
 export function GalleryGrid() {

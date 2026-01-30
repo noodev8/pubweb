@@ -221,23 +221,23 @@ export default async function HomePage() {
             <Image
               src="/images/award-top50.jpg"
               alt="Top 50 Gastropubs"
-              width={100}
-              height={100}
-              className="h-20 w-auto"
+              width={240}
+              height={240}
+              className="h-44 w-auto"
             />
             <Image
-              src="/images/AA-GAC-INN-5STAR.png"
+              src="/images/aa-gac-inn-5star.png"
               alt="AA 5 Star Inn"
-              width={100}
-              height={100}
-              className="h-20 w-auto"
+              width={240}
+              height={240}
+              className="h-44 w-auto"
             />
             <Image
-              src="/images/AA-1-Rosette-2025.png"
+              src="/images/aa-1-rosette-2025.png"
               alt="AA 1 Rosette Award 2025"
-              width={100}
-              height={100}
-              className="h-20 w-auto"
+              width={240}
+              height={240}
+              className="h-44 w-auto"
             />
           </div>
         </div>
