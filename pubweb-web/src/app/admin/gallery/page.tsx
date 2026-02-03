@@ -70,7 +70,7 @@ export default function GalleryPage() {
 
     const res = await uploadGalleryImage(user.venue_id, imageUrl, cloudinaryPublicId);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Image uploaded');
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
       await loadGallery();
     } else if (res.return_code === 'SLOT_LIMIT_REACHED') {
       toast.error('Maximum of 9 images allowed');
@@ -82,7 +82,7 @@ export default function GalleryPage() {
   const handleReplace = async (imageId: string, imageUrl: string, cloudinaryPublicId: string) => {
     const res = await replaceGalleryImage(parseInt(imageId), imageUrl, cloudinaryPublicId);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Image replaced');
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
       await loadGallery();
     } else {
       toast.error(res.message || 'Failed to replace image');
@@ -92,7 +92,7 @@ export default function GalleryPage() {
   const handleDelete = async (imageId: string) => {
     const res = await deleteGalleryImage(parseInt(imageId));
     if (res.return_code === 'SUCCESS') {
-      toast.success('Image deleted');
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
       await loadGallery();
     } else {
       toast.error(res.message || 'Failed to delete image');
@@ -158,7 +158,7 @@ export default function GalleryPage() {
         }
       }
 
-      toast.success('Changes saved');
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
       await loadGallery();
     } catch (error) {
       console.error('Save error:', error);
