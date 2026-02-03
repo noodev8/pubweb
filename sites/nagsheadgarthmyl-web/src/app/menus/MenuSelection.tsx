@@ -20,8 +20,8 @@ function MenuCard({
   return (
     <div className="bg-white border border-stone-200 hover:border-[#7A1B1B]/30 transition-colors group">
       {/* Card Content */}
-      <div className="p-6 lg:p-8">
-        <div className="flex items-start gap-5">
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="flex items-start gap-4 sm:gap-5">
           {/* Thumbnail - clickable */}
           <button
             type="button"
@@ -52,11 +52,11 @@ function MenuCard({
 
           {/* Text content */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-xl lg:text-2xl font-serif text-stone-900 mb-2 group-hover:text-[#7A1B1B] transition-colors">
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-serif text-stone-900 mb-1 sm:mb-2 group-hover:text-[#7A1B1B] transition-colors">
               {menu.name}
             </h3>
             {menu.description && (
-              <p className="text-stone-600 text-sm lg:text-base mb-4">
+              <p className="text-stone-600 text-xs sm:text-sm lg:text-base mb-3 sm:mb-4">
                 {menu.description}
               </p>
             )}
@@ -96,34 +96,34 @@ function Lightbox({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-2 sm:p-4"
       onClick={onClose}
     >
-      {/* Close button */}
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 text-white/80 hover:text-white transition-colors"
-        aria-label="Close"
-      >
-        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      {/* Menu name */}
-      <div className="absolute top-4 left-4 text-white/80 font-serif text-lg">
-        {menuName}
+      {/* Top bar with menu name and close button */}
+      <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-3 sm:p-4 bg-gradient-to-b from-black/50 to-transparent">
+        <span className="text-white/90 font-serif text-sm sm:text-lg truncate pr-4">
+          {menuName}
+        </span>
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-1.5 sm:p-2 text-white/80 hover:text-white transition-colors flex-shrink-0"
+          aria-label="Close"
+        >
+          <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
-      {/* Instruction */}
-      <div className="absolute bottom-4 left-0 right-0 text-center">
+      {/* Instruction - hidden on mobile */}
+      <div className="absolute bottom-4 left-0 right-0 text-center hidden sm:block">
         <p className="text-white/60 text-sm">Click anywhere to close</p>
       </div>
 
       {/* Image container */}
       <div
-        className="relative w-full h-full max-w-4xl max-h-[85vh]"
+        className="relative w-full h-full max-w-4xl max-h-[90vh] sm:max-h-[85vh] mt-12 sm:mt-0"
         onClick={(e) => e.stopPropagation()}
       >
         <Image

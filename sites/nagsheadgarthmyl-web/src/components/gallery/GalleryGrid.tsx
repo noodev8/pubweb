@@ -28,7 +28,8 @@ function GalleryThumbnail({
       className={`
         relative w-full overflow-hidden bg-stone-200 group cursor-pointer
         focus:outline-none focus:ring-2 focus:ring-[#7A1B1B] focus:ring-offset-2
-        ${featured ? 'aspect-[4/3] md:col-span-2 md:row-span-2' : 'aspect-square'}
+        active:scale-[0.98] transition-transform
+        ${featured ? 'aspect-[4/3] col-span-2 row-span-2' : 'aspect-square'}
       `}
     >
       <Image
@@ -38,11 +39,11 @@ function GalleryThumbnail({
         className="object-cover transition-transform duration-300 group-hover:scale-105"
         unoptimized={image.src.includes('cloudinary')}
       />
-      {/* Hover overlay */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
+      {/* Hover overlay - desktop only */}
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors hidden sm:block" />
 
-      {/* Zoom icon */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Zoom icon - desktop hover only */}
+      <div className="absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden sm:flex">
         <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
           <svg
             className="w-6 h-6 text-stone-700"
@@ -62,8 +63,8 @@ function GalleryThumbnail({
 
       {/* Caption overlay for featured */}
       {featured && image.caption && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
-          <p className="text-white text-sm font-medium">{image.caption}</p>
+        <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 bg-gradient-to-t from-black/60 to-transparent">
+          <p className="text-white text-xs sm:text-sm font-medium">{image.caption}</p>
         </div>
       )}
     </button>
@@ -105,7 +106,7 @@ export function GalleryGrid({ images }: GalleryGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4">
         {/* Featured first image - larger */}
         <GalleryThumbnail
           image={featured}
