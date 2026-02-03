@@ -1,45 +1,24 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import Lightbox from 'yet-another-react-lightbox'
 import Captions from 'yet-another-react-lightbox/plugins/captions'
 import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/captions.css'
 import { GalleryImage } from '@/types'
-import { getGalleryImages } from '@/lib/services/venue'
 
-export function GalleryGrid() {
-  const [images, setImages] = useState<GalleryImage[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+interface GalleryGridProps {
+  images: GalleryImage[]
+}
+
+export function GalleryGrid({ images }: GalleryGridProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
-
-  useEffect(() => {
-    async function loadGallery() {
-      const galleryImages = await getGalleryImages()
-      setImages(galleryImages)
-      setIsLoading(false)
-    }
-    loadGallery()
-  }, [])
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index)
     setLightboxOpen(true)
-  }
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="aspect-square bg-stone-200 animate-pulse"
-          />
-        ))}
-      </div>
-    )
   }
 
   if (images.length === 0) {

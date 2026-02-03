@@ -1,8 +1,11 @@
 import { GalleryGrid } from '@/components/gallery'
-import { getVenueInfo } from '@/lib/services/venue'
+import { getVenueInfo, getGalleryImages } from '@/lib/services/venue'
 
 export default async function GalleryPage() {
-  const venue = await getVenueInfo()
+  const [venue, images] = await Promise.all([
+    getVenueInfo(),
+    getGalleryImages(),
+  ])
 
   return (
     <div>
@@ -19,7 +22,7 @@ export default async function GalleryPage() {
       {/* Gallery Grid */}
       <section className="py-12 lg:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <GalleryGrid />
+          <GalleryGrid images={images} />
         </div>
       </section>
     </div>
