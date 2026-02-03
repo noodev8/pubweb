@@ -8,7 +8,7 @@ const navigation = [
   { name: 'Accommodation', href: '/accommodation' },
   { name: 'Restaurant', href: '/restaurant' },
   { name: 'Menus', href: '/menus' },
-  // { name: 'Gallery', href: '/gallery' }, // TODO: re-enable when user-uploaded photos are ready
+  { name: 'Gallery', href: '/gallery' },
   { name: 'Explore', href: '/explore' },
   { name: 'Contact', href: '/contact' },
 ]

@@ -116,6 +116,20 @@ const updatePageRoute = require('./routes/pages/update_page');
 app.use('/api/pages', getPageRoute);
 app.use('/api/pages', updatePageRoute);
 
+// Gallery routes
+const getGalleryRoute = require('./routes/gallery/get_gallery');
+const uploadGalleryImageRoute = require('./routes/gallery/upload_image');
+const updateGalleryImageRoute = require('./routes/gallery/update_image');
+const deleteGalleryImageRoute = require('./routes/gallery/delete_image');
+const replaceGalleryImageRoute = require('./routes/gallery/replace_image');
+const reorderGalleryRoute = require('./routes/gallery/reorder_gallery');
+app.use('/api/gallery', getGalleryRoute);
+app.use('/api/gallery', uploadGalleryImageRoute);
+app.use('/api/gallery', updateGalleryImageRoute);
+app.use('/api/gallery', deleteGalleryImageRoute);
+app.use('/api/gallery', replaceGalleryImageRoute);
+app.use('/api/gallery', reorderGalleryRoute);
+
 // =======================================================================
 // Health Check
 // =======================================================================

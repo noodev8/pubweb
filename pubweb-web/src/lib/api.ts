@@ -156,6 +156,52 @@ export async function updatePage(venueId: number, page: string, data: Partial<Pa
   return apiCall('/api/pages/update_page', { venue_id: venueId, page, ...data });
 }
 
+// Gallery
+export async function getGallery(venueId: number) {
+  return apiCall<{ images: GalleryImage[] }>('/api/gallery/get_gallery', { venue_id: venueId });
+}
+
+export async function uploadGalleryImage(
+  venueId: number,
+  imageUrl: string,
+  cloudinaryPublicId: string,
+  caption?: string
+) {
+  return apiCall<{ image_id: number; sortOrder: number }>('/api/gallery/upload_image', {
+    venue_id: venueId,
+    image_url: imageUrl,
+    cloudinary_public_id: cloudinaryPublicId,
+    caption,
+  });
+}
+
+export async function updateGalleryImage(imageId: number, caption: string) {
+  return apiCall('/api/gallery/update_image', { image_id: imageId, caption });
+}
+
+export async function deleteGalleryImage(imageId: number) {
+  return apiCall('/api/gallery/delete_image', { image_id: imageId });
+}
+
+export async function replaceGalleryImage(
+  imageId: number,
+  imageUrl: string,
+  cloudinaryPublicId: string
+) {
+  return apiCall('/api/gallery/replace_image', {
+    image_id: imageId,
+    image_url: imageUrl,
+    cloudinary_public_id: cloudinaryPublicId,
+  });
+}
+
+export async function reorderGallery(
+  venueId: number,
+  order: Array<{ id: string; sortOrder: number }>
+) {
+  return apiCall('/api/gallery/reorder_gallery', { venue_id: venueId, order });
+}
+
 // Types
 export interface User {
   id: number;
@@ -324,5 +370,13 @@ export interface PageSection {
   content: string;
   image?: string;
   layout?: 'text-only' | 'image-left' | 'image-right';
+  sortOrder: number;
+}
+
+export interface GalleryImage {
+  id: string;
+  imageUrl: string;
+  cloudinaryPublicId: string;
+  caption: string;
   sortOrder: number;
 }

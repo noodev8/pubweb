@@ -146,13 +146,30 @@ export async function getAttractions(): Promise<Attraction[]> {
 // GALLERY
 // =============================================================================
 
-export async function getGalleryImages(category?: string): Promise<GalleryImage[]> {
-  // TODO: Add gallery API endpoint
-  let images = mockGallery
-  if (category) {
-    images = images.filter(img => img.category === category)
+export async function getGalleryImages(): Promise<GalleryImage[]> {
+  const data = await apiCall<{
+    return_code: string
+    images: Array<{
+      id: string
+      imageUrl: string
+      cloudinaryPublicId: string
+      caption: string
+      sortOrder: number
+    }>
+  }>('/api/gallery/get_gallery', { venue_id: parseInt(VENUE_ID) })
+
+  if (data?.images && data.images.length > 0) {
+    return data.images.map((img) => ({
+      id: img.id,
+      src: img.imageUrl,
+      alt: img.caption || 'Gallery image',
+      caption: img.caption || undefined,
+      sortOrder: img.sortOrder,
+    }))
   }
-  return images.sort((a, b) => a.sortOrder - b.sortOrder)
+
+  // Fall back to mock data if API returns empty or fails
+  return mockGallery.sort((a, b) => a.sortOrder - b.sortOrder)
 }
 
 // =============================================================================

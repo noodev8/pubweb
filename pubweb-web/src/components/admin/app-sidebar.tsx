@@ -20,6 +20,7 @@ import {
   UtensilsCrossed,
   Clock,
   Building2,
+  Images,
   LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,11 @@ const menuItems = [
     title: 'Menus',
     url: '/admin/menus',
     icon: UtensilsCrossed,
+  },
+  {
+    title: 'Gallery',
+    url: '/admin/gallery',
+    icon: Images,
   },
   {
     title: 'Opening Hours',

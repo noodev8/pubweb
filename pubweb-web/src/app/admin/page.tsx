@@ -2,24 +2,26 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { getVenue, getMenus, Venue, Menu } from '@/lib/api';
+import { getVenue, getMenus, getGallery, Venue, Menu, GalleryImage } from '@/lib/api';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { UtensilsCrossed, Clock, Building2, ArrowRight } from 'lucide-react';
+import { UtensilsCrossed, Clock, Building2, Images, ArrowRight } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [venue, setVenue] = useState<Venue | null>(null);
   const [menus, setMenus] = useState<Menu[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       if (!user) return;
 
-      const [venueRes, menusRes] = await Promise.all([
+      const [venueRes, menusRes, galleryRes] = await Promise.all([
         getVenue(user.venue_id),
         getMenus(user.venue_id),
+        getGallery(user.venue_id),
       ]);
 
       if (venueRes.return_code === 'SUCCESS' && venueRes.venue) {
@@ -27,6 +29,9 @@ export default function DashboardPage() {
       }
       if (menusRes.return_code === 'SUCCESS' && menusRes.menus) {
         setMenus(menusRes.menus as unknown as Menu[]);
+      }
+      if (galleryRes.return_code === 'SUCCESS' && galleryRes.images) {
+        setGalleryImages(galleryRes.images as unknown as GalleryImage[]);
       }
       setIsLoading(false);
     }
@@ -57,6 +62,13 @@ export default function DashboardPage() {
       icon: UtensilsCrossed,
       href: '/admin/menus',
       color: 'bg-orange-500',
+    },
+    {
+      title: 'Gallery',
+      description: `${galleryImages.length} of 9 images`,
+      icon: Images,
+      href: '/admin/gallery',
+      color: 'bg-purple-500',
     },
     {
       title: 'Opening Hours',
