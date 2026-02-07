@@ -70,12 +70,7 @@ router.post('/replace_image', verifyToken, async (req, res) => {
       });
     }
 
-    // Delete old image from Cloudinary
-    const cloudinaryResult = await deleteImage(image.cloudinary_public_id);
-    if (!cloudinaryResult.success) {
-      console.warn('Cloudinary delete warning:', cloudinaryResult.error);
-      // Continue with update even if old image delete fails
-    }
+    const oldPublicId = image.cloudinary_public_id;
 
     // Update database with new image
     await query(
@@ -84,6 +79,18 @@ router.post('/replace_image', verifyToken, async (req, res) => {
        WHERE id = $3`,
       [image_url, cloudinary_public_id, image_id]
     );
+
+    // Only delete old asset from Cloudinary if no other rows reference it
+    const refCount = await query(
+      'SELECT COUNT(*) as count FROM gallery_images WHERE cloudinary_public_id = $1',
+      [oldPublicId]
+    );
+    if (parseInt(refCount.rows[0].count, 10) === 0) {
+      const cloudinaryResult = await deleteImage(oldPublicId);
+      if (!cloudinaryResult.success) {
+        console.warn('Cloudinary delete warning:', cloudinaryResult.error);
+      }
+    }
 
     return res.json({
       return_code: 'SUCCESS',

@@ -67,15 +67,20 @@ router.post('/delete_image', verifyToken, async (req, res) => {
       });
     }
 
-    // Delete from Cloudinary
-    const cloudinaryResult = await deleteImage(image.cloudinary_public_id);
-    if (!cloudinaryResult.success) {
-      console.warn('Cloudinary delete warning:', cloudinaryResult.error);
-      // Continue with DB delete even if Cloudinary fails
-    }
-
     // Delete from database
     await query('DELETE FROM gallery_images WHERE id = $1', [image_id]);
+
+    // Only delete from Cloudinary if no other rows reference the same asset
+    const refCount = await query(
+      'SELECT COUNT(*) as count FROM gallery_images WHERE cloudinary_public_id = $1',
+      [image.cloudinary_public_id]
+    );
+    if (parseInt(refCount.rows[0].count, 10) === 0) {
+      const cloudinaryResult = await deleteImage(image.cloudinary_public_id);
+      if (!cloudinaryResult.success) {
+        console.warn('Cloudinary delete warning:', cloudinaryResult.error);
+      }
+    }
 
     return res.json({
       return_code: 'SUCCESS',

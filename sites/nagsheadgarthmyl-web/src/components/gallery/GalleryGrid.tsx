@@ -7,7 +7,7 @@ import Captions from 'yet-another-react-lightbox/plugins/captions'
 import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/captions.css'
 import { GalleryImage } from '@/types'
-import { optimisedUrl } from '@/lib/cloudinary'
+import { cloudinaryLoader, optimisedUrl } from '@/lib/cloudinary'
 
 interface GalleryGridProps {
   images: GalleryImage[]
@@ -16,29 +16,23 @@ interface GalleryGridProps {
 function GalleryThumbnail({
   image,
   onClick,
-  featured = false,
 }: {
   image: GalleryImage
   onClick: () => void
-  featured?: boolean
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`
-        relative w-full overflow-hidden bg-stone-200 group cursor-pointer
-        focus:outline-none focus:ring-2 focus:ring-[#7A1B1B] focus:ring-offset-2
-        active:scale-[0.98] transition-transform
-        ${featured ? 'aspect-[4/3] col-span-2 row-span-2' : 'aspect-square'}
-      `}
+      className="relative w-full aspect-square overflow-hidden bg-stone-200 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#7A1B1B] focus:ring-offset-2 active:scale-[0.98] transition-transform"
     >
       <Image
-        src={featured ? optimisedUrl(image.src, 1200) : optimisedUrl(image.src, 600)}
+        src={image.src}
         alt={image.alt}
         fill
+        loader={image.src.includes('cloudinary') ? cloudinaryLoader : undefined}
         className="object-cover transition-transform duration-300 group-hover:scale-105"
-        unoptimized={image.src.includes('cloudinary')}
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
       />
       {/* Hover overlay - desktop only */}
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors hidden sm:block" />
@@ -61,13 +55,6 @@ function GalleryThumbnail({
           </svg>
         </div>
       </div>
-
-      {/* Caption overlay for featured */}
-      {featured && image.caption && (
-        <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 bg-gradient-to-t from-black/60 to-transparent">
-          <p className="text-white text-xs sm:text-sm font-medium">{image.caption}</p>
-        </div>
-      )}
     </button>
   )
 }
@@ -102,25 +89,14 @@ export function GalleryGrid({ images }: GalleryGridProps) {
     )
   }
 
-  // Split into featured (first) and rest
-  const [featured, ...rest] = images
-
   return (
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4">
-        {/* Featured first image - larger */}
-        <GalleryThumbnail
-          image={featured}
-          onClick={() => openLightbox(0)}
-          featured
-        />
-
-        {/* Rest of the images */}
-        {rest.map((image, index) => (
+        {images.map((image, index) => (
           <GalleryThumbnail
             key={image.id}
             image={image}
-            onClick={() => openLightbox(index + 1)}
+            onClick={() => openLightbox(index)}
           />
         ))}
       </div>

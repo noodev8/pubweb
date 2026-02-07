@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import {
   getGallery,
@@ -9,15 +9,16 @@ import {
   deleteGalleryImage,
   replaceGalleryImage,
   reorderGallery,
+  signCloudinaryUpload,
   GalleryImage,
 } from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GallerySlot } from '@/components/admin/gallery-slot';
-import { Images, Loader2, Save } from 'lucide-react';
+import { Images, Loader2, Save, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-const MAX_IMAGES = 9;
+const MAX_IMAGES = 30;
 
 export default function GalleryPage() {
   const { user } = useAuth();
@@ -25,7 +26,9 @@ export default function GalleryPage() {
   const [originalImages, setOriginalImages] = useState<GalleryImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const loadGallery = useCallback(async () => {
     if (!user) return;
@@ -65,17 +68,62 @@ export default function GalleryPage() {
     setHasUnsavedChanges(hasChanges);
   }, [images, originalImages]);
 
-  const handleUpload = async (imageUrl: string, cloudinaryPublicId: string) => {
-    if (!user) return;
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
 
-    const res = await uploadGalleryImage(user.venue_id, imageUrl, cloudinaryPublicId);
-    if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
-      await loadGallery();
-    } else if (res.return_code === 'SLOT_LIMIT_REACHED') {
-      toast.error('Maximum of 9 images allowed');
-    } else {
-      toast.error(res.message || 'Failed to upload image');
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      toast.error('Please select a JPG, PNG, or WebP image');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const sig = await signCloudinaryUpload('pubweb/gallery');
+      if (sig.return_code !== 'SUCCESS') {
+        throw new Error(sig.message || 'Failed to get upload signature');
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('api_key', sig.api_key);
+      formData.append('timestamp', sig.timestamp.toString());
+      formData.append('signature', sig.signature);
+      formData.append('folder', sig.folder);
+      if (sig.transformation) {
+        formData.append('transformation', sig.transformation);
+      }
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`,
+        { method: 'POST', body: formData }
+      );
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+
+      const res = await uploadGalleryImage(user.venue_id, data.secure_url, data.public_id);
+      if (res.return_code === 'SUCCESS') {
+        toast.success('Saved! Changes will appear on your website within 60 seconds.');
+        await loadGallery();
+      } else if (res.return_code === 'SLOT_LIMIT_REACHED') {
+        toast.error(`Maximum of ${MAX_IMAGES} images allowed`);
+      } else {
+        toast.error(res.message || 'Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploading(false);
+      if (uploadInputRef.current) uploadInputRef.current.value = '';
     }
   };
 
@@ -177,33 +225,62 @@ export default function GalleryPage() {
     );
   }
 
-  const emptySlots = MAX_IMAGES - images.length;
-
   return (
     <div className="space-y-4 md:space-y-6">
+      <input
+        ref={uploadInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        capture="environment"
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={isSaving || isUploading}
+      />
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">Gallery</h1>
           <p className="text-sm md:text-base text-muted-foreground">
-            {images.length} of {MAX_IMAGES} slots used
+            {images.length} of {MAX_IMAGES} images
           </p>
         </div>
 
-        {hasUnsavedChanges && (
-          <Button onClick={handleSaveChanges} disabled={isSaving}>
-            {isSaving ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {images.length < MAX_IMAGES && (
+            <Button
+              onClick={() => uploadInputRef.current?.click()}
+              disabled={isSaving || isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Image
+                </>
+              )}
+            </Button>
+          )}
+
+          {hasUnsavedChanges && (
+            <Button onClick={handleSaveChanges} disabled={isSaving} variant="outline">
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
       {hasUnsavedChanges && (
@@ -212,27 +289,32 @@ export default function GalleryPage() {
         </div>
       )}
 
-      {images.length === 0 && emptySlots === MAX_IMAGES ? (
-        <Card>
+      {images.length === 0 ? (
+        <Card
+          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => !isUploading && uploadInputRef.current?.click()}
+        >
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Images className="h-12 w-12 text-muted-foreground mb-4" />
+            {isUploading ? (
+              <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
+            ) : (
+              <Images className="h-12 w-12 text-muted-foreground mb-4" />
+            )}
             <h3 className="text-lg font-medium">No gallery images</h3>
             <p className="text-muted-foreground text-center max-w-sm">
-              Add up to {MAX_IMAGES} images to showcase your venue
+              Click here or the button above to add your first image
             </p>
           </CardContent>
         </Card>
       ) : null}
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Existing images */}
         {images.map((image, index) => (
           <GallerySlot
             key={image.id}
             image={image}
             index={index}
             totalImages={images.length}
-            onUpload={handleUpload}
             onReplace={handleReplace}
             onDelete={handleDelete}
             onCaptionChange={handleCaptionChange}
@@ -241,21 +323,6 @@ export default function GalleryPage() {
             disabled={isSaving}
           />
         ))}
-
-        {/* Empty slots for adding new images */}
-        {emptySlots > 0 && (
-          <GallerySlot
-            index={images.length}
-            totalImages={images.length}
-            onUpload={handleUpload}
-            onReplace={handleReplace}
-            onDelete={handleDelete}
-            onCaptionChange={handleCaptionChange}
-            onMoveUp={handleMoveUp}
-            onMoveDown={handleMoveDown}
-            disabled={isSaving}
-          />
-        )}
       </div>
     </div>
   );

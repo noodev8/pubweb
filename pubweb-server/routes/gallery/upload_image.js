@@ -4,7 +4,7 @@ API Route: upload_image
 =======================================================================
 Method: POST
 Purpose: Adds a new gallery image. Requires authentication.
-         Enforces 9 image limit per venue.
+         Enforces 30 image limit per venue.
 =======================================================================
 Request Payload:
 {
@@ -35,7 +35,7 @@ const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
 
-const MAX_GALLERY_IMAGES = 9;
+const MAX_GALLERY_IMAGES = 30;
 
 
 router.post('/upload_image', verifyToken, async (req, res) => {
@@ -73,25 +73,24 @@ router.post('/upload_image', verifyToken, async (req, res) => {
       });
     }
 
-    // Get next sort order
-    const sortResult = await query(
-      'SELECT COALESCE(MAX(sort_order), -1) + 1 as next_order FROM gallery_images WHERE venue_id = $1',
+    // Shift existing images down so the new image appears first
+    await query(
+      'UPDATE gallery_images SET sort_order = sort_order + 1 WHERE venue_id = $1',
       [venue_id]
     );
-    const nextSortOrder = sortResult.rows[0].next_order;
 
-    // Insert the image
+    // Insert the new image at position 0
     const result = await query(
       `INSERT INTO gallery_images (venue_id, image_url, cloudinary_public_id, caption, sort_order)
-       VALUES ($1, $2, $3, $4, $5)
+       VALUES ($1, $2, $3, $4, 0)
        RETURNING id`,
-      [venue_id, image_url, cloudinary_public_id, caption?.slice(0, 150) || null, nextSortOrder]
+      [venue_id, image_url, cloudinary_public_id, caption?.slice(0, 150) || null]
     );
 
     return res.json({
       return_code: 'SUCCESS',
       image_id: result.rows[0].id,
-      sortOrder: nextSortOrder
+      sortOrder: 0
     });
 
   } catch (error) {

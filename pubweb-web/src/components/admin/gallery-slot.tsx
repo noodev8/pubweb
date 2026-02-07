@@ -20,13 +20,13 @@ import {
   Loader2,
   Camera,
 } from 'lucide-react';
-import { GalleryImage } from '@/lib/api';
+import { GalleryImage, signCloudinaryUpload } from '@/lib/api';
 
 interface GallerySlotProps {
   image?: GalleryImage;
   index: number;
   totalImages: number;
-  onUpload: (imageUrl: string, cloudinaryPublicId: string) => Promise<void>;
+  onUpload?: (imageUrl: string, cloudinaryPublicId: string) => Promise<void>;
   onReplace: (imageId: string, imageUrl: string, cloudinaryPublicId: string) => Promise<void>;
   onDelete: (imageId: string) => Promise<void>;
   onCaptionChange: (imageId: string, caption: string) => void;
@@ -71,17 +71,25 @@ export function GallerySlot({
     setIsUploading(true);
 
     try {
-      // Upload to Cloudinary
+      // Get a signed upload signature from our server
+      const sig = await signCloudinaryUpload('pubweb/gallery');
+      if (sig.return_code !== 'SUCCESS') {
+        throw new Error(sig.message || 'Failed to get upload signature');
+      }
+
+      // Upload to Cloudinary using signed parameters
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '');
-      formData.append('folder', 'pubweb/gallery');
-      // Cap stored image at 2000px — reduces storage costs permanently
-      formData.append('transformation', 'c_limit,w_2000,h_2000,q_auto');
+      formData.append('api_key', sig.api_key);
+      formData.append('timestamp', sig.timestamp.toString());
+      formData.append('signature', sig.signature);
+      formData.append('folder', sig.folder);
+      if (sig.transformation) {
+        formData.append('transformation', sig.transformation);
+      }
 
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`,
         {
           method: 'POST',
           body: formData,
@@ -97,7 +105,7 @@ export function GallerySlot({
       if (image) {
         // Replace existing image
         await onReplace(image.id, data.secure_url, data.public_id);
-      } else {
+      } else if (onUpload) {
         // Upload new image
         await onUpload(data.secure_url, data.public_id);
       }
