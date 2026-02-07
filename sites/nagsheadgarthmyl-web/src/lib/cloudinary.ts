@@ -7,6 +7,8 @@
  * request, so subsequent requests incur no additional transformation cost.
  */
 
+import type { ImageLoaderProps } from 'next/image'
+
 /**
  * Transform a Cloudinary URL to include auto-format, auto-quality, and a width cap.
  * Non-Cloudinary URLs are returned unchanged.
@@ -20,6 +22,20 @@ export function optimisedUrl(url: string, width: number = 1200): string {
 
   // Insert transforms between /upload/ and the version/public_id
   return url.replace(
+    '/upload/',
+    `/upload/f_auto,q_auto,c_limit,w_${width}/`
+  );
+}
+
+/**
+ * Next.js Image loader for Cloudinary URLs.
+ * Generates responsive srcSet automatically — the browser picks the best
+ * width for the viewport, so mobile users download smaller images.
+ * Non-Cloudinary URLs are returned as-is.
+ */
+export function cloudinaryLoader({ src, width }: ImageLoaderProps): string {
+  if (!src.includes('res.cloudinary.com')) return src;
+  return src.replace(
     '/upload/',
     `/upload/f_auto,q_auto,c_limit,w_${width}/`
   );
