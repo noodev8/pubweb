@@ -1,0 +1,6 @@
+cd /apps/pubweb/
+git pull
+rsync -av --delete --exclude='.env' --exclude='node_modules' --exclude='.git' --exclude='tests' --exclude='docs' --exclude='.github' /apps/pubweb/pubweb-server/ /apps/production/pubweb-server/
+cd /apps/production/pubweb-server
+npm install
+pm2 restart server.js --name pubweb-prod
