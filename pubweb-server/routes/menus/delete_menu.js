@@ -30,6 +30,7 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
+const { deleteImage, extractPublicId } = require('../../utils/cloudinary');
 
 router.post('/delete_menu', verifyToken, async (req, res) => {
 
@@ -44,8 +45,8 @@ router.post('/delete_menu', verifyToken, async (req, res) => {
       });
     }
 
-    // Check menu exists and get venue_id
-    const menuCheck = await query('SELECT id, venue_id FROM menus WHERE id = $1', [menu_id]);
+    // Check menu exists and get venue_id + Cloudinary URLs for cleanup
+    const menuCheck = await query('SELECT id, venue_id, image_url, pdf_url FROM menus WHERE id = $1', [menu_id]);
     if (menuCheck.rows.length === 0) {
       return res.json({
         return_code: 'MENU_NOT_FOUND',
@@ -61,6 +62,28 @@ router.post('/delete_menu', verifyToken, async (req, res) => {
         return_code: 'FORBIDDEN',
         message: 'You do not have access to this menu'
       });
+    }
+
+    // Clean up Cloudinary assets before deleting from database.
+    // Delete failures are logged but don't block the menu deletion —
+    // the cleanup script can catch any orphans later.
+    if (menu.image_url) {
+      const imagePublicId = extractPublicId(menu.image_url);
+      if (imagePublicId) {
+        const result = await deleteImage(imagePublicId);
+        if (!result.success) {
+          console.warn('Cloudinary delete warning (menu image):', result.error);
+        }
+      }
+    }
+    if (menu.pdf_url) {
+      const pdfPublicId = extractPublicId(menu.pdf_url);
+      if (pdfPublicId) {
+        const result = await deleteImage(pdfPublicId);
+        if (!result.success) {
+          console.warn('Cloudinary delete warning (menu PDF):', result.error);
+        }
+      }
     }
 
     // Delete menu (CASCADE will delete sections and items)

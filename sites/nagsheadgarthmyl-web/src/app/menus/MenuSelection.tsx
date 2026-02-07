@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Menu } from '@/types'
+import { optimisedUrl } from '@/lib/cloudinary'
 
 interface MenuSelectionProps {
   menus: Menu[]
@@ -29,7 +30,7 @@ function MenuCard({
             className="relative w-20 h-28 sm:w-24 sm:h-32 flex-shrink-0 bg-stone-100 overflow-hidden border border-stone-200 hover:border-[#7A1B1B]/50 transition-all hover:shadow-md group/thumb"
           >
             <Image
-              src={menu.imageUrl}
+              src={optimisedUrl(menu.imageUrl, 400)}
               alt={menu.name}
               fill
               className="object-cover"
@@ -127,7 +128,7 @@ function Lightbox({
         onClick={(e) => e.stopPropagation()}
       >
         <Image
-          src={imageUrl}
+          src={optimisedUrl(imageUrl, 1200)}
           alt={menuName}
           fill
           className="object-contain"

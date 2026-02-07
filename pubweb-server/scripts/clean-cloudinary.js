@@ -28,7 +28,7 @@ HOW TO USE
 WHAT IT DOES
 =======================================================================
 - Fetches all images from the 'pubweb' folder in Cloudinary (metadata only)
-- Queries all image URLs from the database (menus, rooms, attractions, pages)
+- Queries all image URLs from the database (menus, gallery_images)
 - Compares the two lists to find orphaned images
 - Reports findings and optionally deletes orphans
 
@@ -132,6 +132,11 @@ async function getDatabaseImageUrls() {
   const menuPdfs = await query('SELECT pdf_url FROM menus WHERE pdf_url IS NOT NULL');
   menuPdfs.rows.forEach(row => urls.add(row.pdf_url));
   console.log(`  menus.pdf_url: ${menuPdfs.rows.length} URLs`);
+
+  // gallery_images.image_url
+  const galleryImages = await query('SELECT image_url FROM gallery_images WHERE image_url IS NOT NULL');
+  galleryImages.rows.forEach(row => urls.add(row.image_url));
+  console.log(`  gallery_images.image_url: ${galleryImages.rows.length} URLs`);
 
   console.log(`  Total unique URLs in database: ${urls.size}`);
   return urls;

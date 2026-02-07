@@ -34,6 +34,31 @@ async function deleteImage(publicId) {
   }
 }
 
+/**
+ * Extract a Cloudinary public_id from a full URL.
+ * Handles URLs with or without version numbers.
+ *
+ * Example: https://res.cloudinary.com/xxx/image/upload/v123/pubweb/gallery/abc.jpg
+ * Returns: pubweb/gallery/abc
+ *
+ * @param {string} url - The full Cloudinary URL
+ * @returns {string|null} The public_id, or null if extraction fails
+ */
+function extractPublicId(url) {
+  if (!url) return null;
+
+  // Match the pattern after /upload/ and before the file extension
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/);
+  if (match) {
+    return match[1];
+  }
+
+  // Fallback: try to find pubweb/ in the URL
+  const pubwebMatch = url.match(/(pubweb\/[^.]+)/);
+  return pubwebMatch ? pubwebMatch[1] : null;
+}
+
 module.exports = {
   deleteImage,
+  extractPublicId,
 };

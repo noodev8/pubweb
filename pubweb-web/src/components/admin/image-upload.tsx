@@ -26,9 +26,9 @@ export function ImageUpload({ currentImageUrl, onUpload, onRemove }: ImageUpload
       return;
     }
 
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Image must be less than 10MB');
+    // Validate file size (max 5MB — web images don't need to be larger)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image must be less than 5MB');
       return;
     }
 
@@ -40,6 +40,8 @@ export function ImageUpload({ currentImageUrl, onUpload, onRemove }: ImageUpload
       formData.append('file', file);
       formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '');
       formData.append('folder', 'pubweb/menus');
+      // Cap stored image at 2000px — reduces storage costs permanently
+      formData.append('transformation', 'c_limit,w_2000,h_2000,q_auto');
 
       const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       const response = await fetch(
@@ -124,7 +126,7 @@ export function ImageUpload({ currentImageUrl, onUpload, onRemove }: ImageUpload
         >
           <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
           <span className="text-sm text-muted-foreground">Click to upload menu image</span>
-          <span className="text-xs text-muted-foreground">JPG or PNG, max 10MB</span>
+          <span className="text-xs text-muted-foreground">JPG or PNG, max 5MB</span>
         </div>
       )}
 

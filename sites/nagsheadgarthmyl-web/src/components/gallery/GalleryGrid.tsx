@@ -7,6 +7,7 @@ import Captions from 'yet-another-react-lightbox/plugins/captions'
 import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/captions.css'
 import { GalleryImage } from '@/types'
+import { optimisedUrl } from '@/lib/cloudinary'
 
 interface GalleryGridProps {
   images: GalleryImage[]
@@ -33,7 +34,7 @@ function GalleryThumbnail({
       `}
     >
       <Image
-        src={image.src}
+        src={featured ? optimisedUrl(image.src, 1200) : optimisedUrl(image.src, 600)}
         alt={image.alt}
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -130,7 +131,7 @@ export function GalleryGrid({ images }: GalleryGridProps) {
         index={lightboxIndex}
         plugins={[Captions]}
         slides={images.map((image) => ({
-          src: image.src,
+          src: optimisedUrl(image.src, 1600),
           alt: image.alt,
           title: image.caption,
         }))}

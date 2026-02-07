@@ -43,6 +43,7 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../../database');
 const { verifyToken } = require('../../middleware/auth');
+const { deleteImage, extractPublicId } = require('../../utils/cloudinary');
 
 router.post('/update_menu', verifyToken, async (req, res) => {
 
@@ -90,6 +91,40 @@ router.post('/update_menu', verifyToken, async (req, res) => {
           return_code: 'SLUG_EXISTS',
           message: 'A menu with this slug already exists for this venue'
         });
+      }
+    }
+
+    // Clean up old Cloudinary assets if image_url or pdf_url is being changed/cleared.
+    // We fetch the current values before updating so we know what to delete.
+    // Cloudinary delete failures are logged but don't block the update — the cleanup
+    // script can catch any orphans later.
+    if (imageUrl !== undefined || pdfUrl !== undefined) {
+      const currentMenu = await query(
+        'SELECT image_url, pdf_url FROM menus WHERE id = $1',
+        [menu_id]
+      );
+      const current = currentMenu.rows[0];
+
+      // If image_url is being replaced or cleared, delete the old image from Cloudinary
+      if (imageUrl !== undefined && current.image_url && current.image_url !== imageUrl) {
+        const oldPublicId = extractPublicId(current.image_url);
+        if (oldPublicId) {
+          const result = await deleteImage(oldPublicId);
+          if (!result.success) {
+            console.warn('Cloudinary delete warning (menu image):', result.error);
+          }
+        }
+      }
+
+      // If pdf_url is being replaced or cleared, delete the old PDF from Cloudinary
+      if (pdfUrl !== undefined && current.pdf_url && current.pdf_url !== pdfUrl) {
+        const oldPublicId = extractPublicId(current.pdf_url);
+        if (oldPublicId) {
+          const result = await deleteImage(oldPublicId);
+          if (!result.success) {
+            console.warn('Cloudinary delete warning (menu PDF):', result.error);
+          }
+        }
       }
     }
 

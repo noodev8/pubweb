@@ -62,9 +62,9 @@ export function GallerySlot({
       return;
     }
 
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Image must be less than 10MB');
+    // Validate file size (max 5MB — web images don't need to be larger)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image must be less than 5MB');
       return;
     }
 
@@ -76,6 +76,8 @@ export function GallerySlot({
       formData.append('file', file);
       formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '');
       formData.append('folder', 'pubweb/gallery');
+      // Cap stored image at 2000px — reduces storage costs permanently
+      formData.append('transformation', 'c_limit,w_2000,h_2000,q_auto');
 
       const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       const response = await fetch(
