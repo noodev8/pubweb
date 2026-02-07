@@ -8,7 +8,6 @@ import {
   updateMenu,
   uploadMenuImage,
   deleteMenuImage,
-  replaceMenuImage,
   reorderMenuImages,
   signCloudinaryUpload,
   Menu,
@@ -20,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { ArrowLeft, Save, Plus, Loader2, X, ArrowUp, ArrowDown, Replace } from 'lucide-react';
+import { ArrowLeft, Save, Plus, Loader2, X, ArrowUp, ArrowDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cloudinaryLoader } from '@/lib/cloudinary';
@@ -39,8 +38,6 @@ export default function MenuEditPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const uploadInputRef = useRef<HTMLInputElement>(null);
-  const replaceInputRef = useRef<HTMLInputElement>(null);
-  const [replacingImageId, setReplacingImageId] = useState<string | null>(null);
 
   const loadMenu = useCallback(async () => {
     const res = await getMenu(menuId);
@@ -159,40 +156,6 @@ export default function MenuEditPage() {
     }
   };
 
-  const handleReplaceSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !replacingImageId) return;
-
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      toast.error('Please select a JPG, PNG, or WebP image');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-      const data = await uploadToCloudinary(file);
-      const res = await replaceMenuImage(parseInt(replacingImageId), data.secure_url, data.public_id);
-      if (res.return_code === 'SUCCESS') {
-        toast.success('Saved! Changes will appear on your website within 60 seconds.');
-        await loadMenu();
-      } else {
-        toast.error(res.message || 'Failed to replace image');
-      }
-    } catch {
-      toast.error('Failed to replace image. Please try again.');
-    } finally {
-      setIsUploading(false);
-      setReplacingImageId(null);
-      if (replaceInputRef.current) replaceInputRef.current.value = '';
-    }
-  };
-
   const handleDelete = async (imageId: string) => {
     const res = await deleteMenuImage(parseInt(imageId));
     if (res.return_code === 'SUCCESS') {
@@ -257,15 +220,6 @@ export default function MenuEditPage() {
         className="hidden"
         disabled={isUploading}
       />
-      <input
-        ref={replaceInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        onChange={handleReplaceSelect}
-        className="hidden"
-        disabled={isUploading}
-      />
-
       {/* Header */}
       <div className="space-y-4">
         <div className="flex items-start gap-3">
@@ -390,7 +344,7 @@ export default function MenuEditPage() {
                   </div>
 
                   {/* Action buttons overlay */}
-                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2 right-2 flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button
                       type="button"
                       onClick={() => handleDelete(image.id)}
@@ -402,7 +356,7 @@ export default function MenuEditPage() {
                   </div>
 
                   {/* Bottom action bar */}
-                  <div className="flex items-center justify-between px-2 py-1.5 bg-muted/80">
+                  <div className="flex items-center justify-center px-2 py-1.5 bg-muted/80">
                     <div className="flex gap-1">
                       <button
                         type="button"
@@ -423,18 +377,6 @@ export default function MenuEditPage() {
                         <ArrowDown className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setReplacingImageId(image.id);
-                        replaceInputRef.current?.click();
-                      }}
-                      disabled={isUploading}
-                      className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
-                      title="Replace"
-                    >
-                      <Replace className="h-3.5 w-3.5" />
-                    </button>
                   </div>
                 </div>
               ))}

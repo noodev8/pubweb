@@ -41,8 +41,8 @@ function MenuCard({
               className="object-cover"
               sizes="96px"
             />
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/30 transition-colors flex items-center justify-center">
+            {/* Hover overlay - desktop only */}
+            <div className="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/30 transition-colors hidden sm:flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-white opacity-0 group-hover/thumb:opacity-100 transition-opacity"
                 fill="none"

@@ -205,7 +205,7 @@ export default function HoursPage() {
               </div>
 
               {!day.isClosed && (
-                <div className="pl-0 sm:pl-24 md:pl-28 space-y-2">
+                <div className="pl-4 sm:pl-24 md:pl-28 space-y-2">
                   {(day.periods || []).map((period, periodIndex) => (
                     <div key={periodIndex} className="flex items-center gap-2">
                       <Input
