@@ -1,12 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import {
   getMenu,
   updateMenu,
+  uploadMenuImage,
+  deleteMenuImage,
+  replaceMenuImage,
+  reorderMenuImages,
+  signCloudinaryUpload,
   Menu,
+  MenuImage,
 } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,36 +20,45 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Plus, Loader2, X, ArrowUp, ArrowDown, Replace } from 'lucide-react';
 import Link from 'next/link';
-import { ImageUpload } from '@/components/admin/image-upload';
-import { PdfUpload } from '@/components/admin/pdf-upload';
+import Image from 'next/image';
+import { cloudinaryLoader } from '@/lib/cloudinary';
+
+const MAX_MENU_IMAGES = 10;
 
 export default function MenuEditPage() {
   const params = useParams();
   const router = useRouter();
-  useAuth(); // Ensures user is authenticated
+  useAuth();
   const menuId = parseInt(params.id as string);
 
   const [menu, setMenu] = useState<Menu | null>(null);
+  const [images, setImages] = useState<MenuImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
+  const replaceInputRef = useRef<HTMLInputElement>(null);
+  const [replacingImageId, setReplacingImageId] = useState<string | null>(null);
 
-  const loadMenu = async () => {
+  const loadMenu = useCallback(async () => {
     const res = await getMenu(menuId);
     if (res.return_code === 'SUCCESS' && res.menu) {
-      setMenu(res.menu as unknown as Menu);
+      const menuData = res.menu as unknown as Menu;
+      setMenu(menuData);
+      const sorted = [...(menuData.images || [])].sort((a, b) => a.sortOrder - b.sortOrder);
+      setImages(sorted);
     } else if (res.return_code !== 'SUCCESS') {
       toast.error('Failed to load menu');
       router.push('/admin/menus');
     }
     setIsLoading(false);
-  };
+  }, [menuId, router]);
 
   useEffect(() => {
     loadMenu();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [menuId]);
+  }, [loadMenu]);
 
   const handleSaveMenu = async () => {
     if (!menu) return;
@@ -63,39 +78,162 @@ export default function MenuEditPage() {
     setIsSaving(false);
   };
 
-  const handleImageUpload = async (imageUrl: string) => {
-    const res = await updateMenu(menuId, { imageUrl });
-    if (res.return_code === 'SUCCESS') {
-      loadMenu();
-    } else {
-      toast.error(res.message || 'Failed to save image');
+  const uploadToCloudinary = async (file: File) => {
+    const sig = await signCloudinaryUpload('pubweb/menus');
+    if (sig.return_code !== 'SUCCESS') {
+      throw new Error(sig.message || 'Failed to get upload signature');
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('api_key', sig.api_key);
+    formData.append('timestamp', sig.timestamp.toString());
+    formData.append('signature', sig.signature);
+    formData.append('folder', sig.folder);
+    if (sig.transformation) {
+      formData.append('transformation', sig.transformation);
+    }
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`,
+      { method: 'POST', body: formData }
+    );
+
+    if (!response.ok) throw new Error('Upload failed');
+    return await response.json();
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    // Validate all files first
+    const validFiles: File[] = [];
+    for (const file of Array.from(files)) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        toast.error(`${file.name}: must be JPG, PNG, or WebP`);
+        continue;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name}: must be less than 5MB`);
+        continue;
+      }
+      validFiles.push(file);
+    }
+
+    if (validFiles.length === 0) return;
+
+    // Check we won't exceed the limit
+    const remaining = MAX_MENU_IMAGES - images.length;
+    if (validFiles.length > remaining) {
+      toast.error(`Can only add ${remaining} more image${remaining === 1 ? '' : 's'} (max ${MAX_MENU_IMAGES})`);
+      if (remaining === 0) return;
+      validFiles.splice(remaining);
+    }
+
+    setIsUploading(true);
+
+    try {
+      let uploaded = 0;
+      for (const file of validFiles) {
+        const data = await uploadToCloudinary(file);
+        const res = await uploadMenuImage(menuId, data.secure_url, data.public_id);
+        if (res.return_code === 'SUCCESS') {
+          uploaded++;
+        } else if (res.return_code === 'SLOT_LIMIT_REACHED') {
+          toast.error(`Maximum of ${MAX_MENU_IMAGES} menu images reached`);
+          break;
+        } else {
+          toast.error(res.message || `Failed to upload ${file.name}`);
+        }
+      }
+      if (uploaded > 0) {
+        toast.success(`${uploaded} image${uploaded === 1 ? '' : 's'} uploaded! Changes will appear on your website within 60 seconds.`);
+        await loadMenu();
+      }
+    } catch {
+      toast.error('Failed to upload images. Please try again.');
+    } finally {
+      setIsUploading(false);
+      if (uploadInputRef.current) uploadInputRef.current.value = '';
     }
   };
 
-  const handleImageRemove = async () => {
-    const res = await updateMenu(menuId, { imageUrl: '' });
-    if (res.return_code === 'SUCCESS') {
-      loadMenu();
-    } else {
-      toast.error(res.message || 'Failed to remove image');
+  const handleReplaceSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !replacingImageId) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      toast.error('Please select a JPG, PNG, or WebP image');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const data = await uploadToCloudinary(file);
+      const res = await replaceMenuImage(parseInt(replacingImageId), data.secure_url, data.public_id);
+      if (res.return_code === 'SUCCESS') {
+        toast.success('Saved! Changes will appear on your website within 60 seconds.');
+        await loadMenu();
+      } else {
+        toast.error(res.message || 'Failed to replace image');
+      }
+    } catch {
+      toast.error('Failed to replace image. Please try again.');
+    } finally {
+      setIsUploading(false);
+      setReplacingImageId(null);
+      if (replaceInputRef.current) replaceInputRef.current.value = '';
     }
   };
 
-  const handlePdfUpload = async (pdfUrl: string) => {
-    const res = await updateMenu(menuId, { pdfUrl });
+  const handleDelete = async (imageId: string) => {
+    const res = await deleteMenuImage(parseInt(imageId));
     if (res.return_code === 'SUCCESS') {
-      loadMenu();
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      await loadMenu();
     } else {
-      toast.error(res.message || 'Failed to save PDF');
+      toast.error(res.message || 'Failed to delete image');
     }
   };
 
-  const handlePdfRemove = async () => {
-    const res = await updateMenu(menuId, { pdfUrl: '' });
+  const handleMoveUp = async (index: number) => {
+    if (index === 0) return;
+    const newImages = [...images];
+    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    const reordered = newImages.map((img, i) => ({ ...img, sortOrder: i }));
+    setImages(reordered);
+
+    const order = reordered.map((img, i) => ({ id: img.id, sortOrder: i }));
+    const res = await reorderMenuImages(menuId, order);
     if (res.return_code === 'SUCCESS') {
-      loadMenu();
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
     } else {
-      toast.error(res.message || 'Failed to remove PDF');
+      toast.error('Failed to reorder images');
+      await loadMenu();
+    }
+  };
+
+  const handleMoveDown = async (index: number) => {
+    if (index === images.length - 1) return;
+    const newImages = [...images];
+    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    const reordered = newImages.map((img, i) => ({ ...img, sortOrder: i }));
+    setImages(reordered);
+
+    const order = reordered.map((img, i) => ({ id: img.id, sortOrder: i }));
+    const res = await reorderMenuImages(menuId, order);
+    if (res.return_code === 'SUCCESS') {
+      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+    } else {
+      toast.error('Failed to reorder images');
+      await loadMenu();
     }
   };
 
@@ -109,6 +247,25 @@ export default function MenuEditPage() {
 
   return (
     <div className="space-y-4 md:space-y-6">
+      {/* Hidden file inputs */}
+      <input
+        ref={uploadInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={isUploading}
+      />
+      <input
+        ref={replaceInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={handleReplaceSelect}
+        className="hidden"
+        disabled={isUploading}
+      />
+
       {/* Header */}
       <div className="space-y-4">
         <div className="flex items-start gap-3">
@@ -166,36 +323,125 @@ export default function MenuEditPage() {
         </CardContent>
       </Card>
 
-      {/* Menu Image */}
+      {/* Menu Images */}
       <Card>
         <CardHeader>
-          <CardTitle>Menu Image</CardTitle>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Menu Images</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                {images.length} of {MAX_MENU_IMAGES} images
+              </p>
+            </div>
+            {images.length < MAX_MENU_IMAGES && (
+              <Button
+                onClick={() => uploadInputRef.current?.click()}
+                disabled={isUploading}
+                size="sm"
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Image
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <ImageUpload
-            currentImageUrl={menu.imageUrl}
-            onUpload={handleImageUpload}
-            onRemove={handleImageRemove}
-          />
-          <p className="text-sm text-muted-foreground mt-2">
-            This image is displayed on the website as a preview of your menu.
-          </p>
-        </CardContent>
-      </Card>
+          {images.length === 0 ? (
+            <div
+              className="flex flex-col items-center justify-center py-12 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+              onClick={() => !isUploading && uploadInputRef.current?.click()}
+            >
+              {isUploading ? (
+                <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
+              ) : (
+                <Plus className="h-12 w-12 text-muted-foreground mb-4" />
+              )}
+              <p className="text-muted-foreground text-center">
+                Upload menu page images (PNG, JPG, or WebP)
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+              {images.map((image, index) => (
+                <div key={image.id} className="relative group border rounded-lg overflow-hidden">
+                  <div className="relative aspect-[3/4] bg-muted">
+                    <Image
+                      src={image.imageUrl}
+                      alt={`Menu page ${index + 1}`}
+                      fill
+                      loader={image.imageUrl.includes('cloudinary') ? cloudinaryLoader : undefined}
+                      className="object-cover"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    />
+                  </div>
 
-      {/* Menu PDF */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Menu PDF</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PdfUpload
-            currentPdfUrl={menu.pdfUrl}
-            onUpload={handlePdfUpload}
-            onRemove={handlePdfRemove}
-          />
-          <p className="text-sm text-muted-foreground mt-2">
-            Optional: Upload a PDF for customers to download the full menu.
+                  {/* Page number label */}
+                  <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    Page {index + 1}
+                  </div>
+
+                  {/* Action buttons overlay */}
+                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(image.id)}
+                      className="p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors cursor-pointer"
+                      title="Delete"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+
+                  {/* Bottom action bar */}
+                  <div className="flex items-center justify-between px-2 py-1.5 bg-muted/80">
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handleMoveUp(index)}
+                        disabled={index === 0}
+                        className="p-1 rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Move left"
+                      >
+                        <ArrowUp className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveDown(index)}
+                        disabled={index === images.length - 1}
+                        className="p-1 rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Move right"
+                      >
+                        <ArrowDown className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReplacingImageId(image.id);
+                        replaceInputRef.current?.click();
+                      }}
+                      disabled={isUploading}
+                      className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                      title="Replace"
+                    >
+                      <Replace className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-sm text-muted-foreground mt-3">
+            Upload menu pages as images. Customers will view them in a swipeable carousel on your website.
           </p>
         </CardContent>
       </Card>

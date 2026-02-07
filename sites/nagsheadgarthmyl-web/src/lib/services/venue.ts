@@ -9,6 +9,7 @@ import {
   VenueInfo,
   OpeningHours,
   Menu,
+  MenuImage,
   Accommodation,
   Attraction,
   GalleryImage,
@@ -35,7 +36,7 @@ async function apiCall<T>(endpoint: string, body: object): Promise<T | null> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      next: { revalidate: 60 }, // Cache for 60 seconds
+      next: { revalidate: 0 }, // No cache (testing)
     })
     const data = await response.json()
     if (data.return_code === 'SUCCESS') {
@@ -81,12 +82,22 @@ export async function getOpeningHours(): Promise<OpeningHours> {
  * Get all active menus (regular + events)
  */
 export async function getMenus(): Promise<Menu[]> {
-  const data = await apiCall<{ return_code: string; menus: Menu[] }>(
+  const data = await apiCall<{
+    return_code: string
+    menus: Array<Menu & { type?: string; images?: MenuImage[] }>
+  }>(
     '/api/menus/get_menus',
     { venue_id: parseInt(VENUE_ID) }
   )
   if (data?.menus) {
-    return data.menus.filter(menu => menu.isActive).sort((a, b) => a.sortOrder - b.sortOrder)
+    return data.menus
+      .map(menu => ({
+        ...menu,
+        isEvent: menu.type === 'event',
+        images: menu.images || [],
+      }))
+      .filter(menu => menu.isActive)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
   }
   return mockMenus.filter(menu => menu.isActive).sort((a, b) => a.sortOrder - b.sortOrder)
 }

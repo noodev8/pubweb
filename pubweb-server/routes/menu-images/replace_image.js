@@ -1,0 +1,112 @@
+/*
+=======================================================================
+API Route: replace_image (menu images)
+=======================================================================
+Method: POST
+Purpose: Replaces a menu image (deletes old from Cloudinary, updates DB).
+         Requires authentication.
+=======================================================================
+Request Payload:
+{
+  "image_id": 1,                       // integer, required
+  "image_url": "https://...",          // string, required (new image URL)
+  "cloudinary_public_id": "pubweb/..." // string, required (new public_id)
+}
+
+Success Response:
+{
+  "return_code": "SUCCESS",
+  "message": "Menu image replaced successfully"
+}
+=======================================================================
+Return Codes:
+"SUCCESS"
+"MISSING_FIELDS"
+"FORBIDDEN"
+"IMAGE_NOT_FOUND"
+"SERVER_ERROR"
+=======================================================================
+*/
+
+const express = require('express');
+const router = express.Router();
+const { query } = require('../../database');
+const { verifyToken } = require('../../middleware/auth');
+const { deleteImage } = require('../../utils/cloudinary');
+
+
+router.post('/replace_image', verifyToken, async (req, res) => {
+
+  try {
+    const { image_id, image_url, cloudinary_public_id } = req.body;
+
+    // Validate required fields
+    if (!image_id || !image_url || !cloudinary_public_id) {
+      return res.json({
+        return_code: 'MISSING_FIELDS',
+        message: 'image_id, image_url, and cloudinary_public_id are required'
+      });
+    }
+
+    // Check image exists and get menu's venue_id
+    const imageCheck = await query(
+      `SELECT mi.id, mi.cloudinary_public_id, m.venue_id
+       FROM menu_images mi
+       JOIN menus m ON m.id = mi.menu_id
+       WHERE mi.id = $1`,
+      [image_id]
+    );
+    if (imageCheck.rows.length === 0) {
+      return res.json({
+        return_code: 'IMAGE_NOT_FOUND',
+        message: 'Menu image not found'
+      });
+    }
+
+    const image = imageCheck.rows[0];
+
+    // Check user has access
+    if (req.user.venue_id !== image.venue_id) {
+      return res.json({
+        return_code: 'FORBIDDEN',
+        message: 'You do not have access to this image'
+      });
+    }
+
+    const oldPublicId = image.cloudinary_public_id;
+
+    // Update database with new image
+    await query(
+      `UPDATE menu_images
+       SET image_url = $1, cloudinary_public_id = $2
+       WHERE id = $3`,
+      [image_url, cloudinary_public_id, image_id]
+    );
+
+    // Only delete old asset from Cloudinary if no other rows reference it
+    const refCount = await query(
+      'SELECT COUNT(*) as count FROM menu_images WHERE cloudinary_public_id = $1',
+      [oldPublicId]
+    );
+    if (parseInt(refCount.rows[0].count, 10) === 0) {
+      const cloudinaryResult = await deleteImage(oldPublicId);
+      if (!cloudinaryResult.success) {
+        console.warn('Cloudinary delete warning (menu image):', cloudinaryResult.error);
+      }
+    }
+
+    return res.json({
+      return_code: 'SUCCESS',
+      message: 'Menu image replaced successfully'
+    });
+
+  } catch (error) {
+    console.error('menu replace_image error:', error);
+    return res.json({
+      return_code: 'SERVER_ERROR',
+      message: 'An error occurred while replacing menu image'
+    });
+  }
+});
+
+module.exports = router;

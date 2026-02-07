@@ -99,7 +99,7 @@ router.post('/get_menu', async (req, res) => {
     const result = await query(
       `SELECT
         m.id as menu_id, m.name as menu_name, m.slug, m.description as menu_description,
-        m.type, m.is_active, m.sort_order as menu_sort_order, m.pdf_url, m.image_url,
+        m.type, m.is_active, m.sort_order as menu_sort_order, m.pdf_url, m.image_url, m.image_cloudinary_public_id,
         m.event_start, m.event_end,
         s.id as section_id, s.name as section_name, s.description as section_description,
         s.sort_order as section_sort_order,
@@ -125,6 +125,21 @@ router.post('/get_menu', async (req, res) => {
       });
     }
 
+    // Fetch menu images
+    const menuImagesResult = await query(
+      `SELECT id, image_url, cloudinary_public_id, sort_order
+       FROM menu_images
+       WHERE menu_id = $1
+       ORDER BY sort_order`,
+      [menu_id]
+    );
+    const menuImages = menuImagesResult.rows.map(row => ({
+      id: row.id.toString(),
+      imageUrl: row.image_url,
+      cloudinaryPublicId: row.cloudinary_public_id,
+      sortOrder: row.sort_order
+    }));
+
     // Build the menu object from the first row (menu data is same across all rows)
     const firstRow = result.rows[0];
     const menu = {
@@ -136,7 +151,10 @@ router.post('/get_menu', async (req, res) => {
       isActive: firstRow.is_active,
       sortOrder: firstRow.menu_sort_order,
       pdfUrl: firstRow.pdf_url || undefined,
-      imageUrl: firstRow.image_url || undefined,
+      // Backward compat: imageUrl from first menu_image, or fall back to legacy column
+      imageUrl: (menuImages.length > 0 ? menuImages[0].imageUrl : firstRow.image_url) || undefined,
+      imageCloudinaryPublicId: firstRow.image_cloudinary_public_id || undefined,
+      images: menuImages,
       // Only include eventDateRange if both dates are present
       eventDateRange: firstRow.event_start && firstRow.event_end ? {
         start: firstRow.event_start.toISOString().split('T')[0],

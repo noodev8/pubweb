@@ -156,6 +156,23 @@ export async function updatePage(venueId: number, page: string, data: Partial<Pa
   return apiCall('/api/pages/update_page', { venue_id: venueId, page, ...data });
 }
 
+// Cloudinary
+export interface CloudinarySignature {
+  return_code: string;
+  message?: string;
+  signature: string;
+  timestamp: number;
+  api_key: string;
+  cloud_name: string;
+  folder: string;
+  transformation?: string;
+}
+
+export async function signCloudinaryUpload(folder: string): Promise<CloudinarySignature> {
+  const res = await apiCall('/api/cloudinary/sign_upload', { folder });
+  return res as unknown as CloudinarySignature;
+}
+
 // Gallery
 export async function getGallery(venueId: number) {
   return apiCall<{ images: GalleryImage[] }>('/api/gallery/get_gallery', { venue_id: venueId });
@@ -200,6 +217,42 @@ export async function reorderGallery(
   order: Array<{ id: string; sortOrder: number }>
 ) {
   return apiCall('/api/gallery/reorder_gallery', { venue_id: venueId, order });
+}
+
+// Menu Images
+export async function uploadMenuImage(
+  menuId: number,
+  imageUrl: string,
+  cloudinaryPublicId: string
+) {
+  return apiCall<{ image_id: number; sortOrder: number }>('/api/menu-images/upload_image', {
+    menu_id: menuId,
+    image_url: imageUrl,
+    cloudinary_public_id: cloudinaryPublicId,
+  });
+}
+
+export async function deleteMenuImage(imageId: number) {
+  return apiCall('/api/menu-images/delete_image', { image_id: imageId });
+}
+
+export async function replaceMenuImage(
+  imageId: number,
+  imageUrl: string,
+  cloudinaryPublicId: string
+) {
+  return apiCall('/api/menu-images/replace_image', {
+    image_id: imageId,
+    image_url: imageUrl,
+    cloudinary_public_id: cloudinaryPublicId,
+  });
+}
+
+export async function reorderMenuImages(
+  menuId: number,
+  order: Array<{ id: string; sortOrder: number }>
+) {
+  return apiCall('/api/menu-images/reorder_images', { menu_id: menuId, order });
 }
 
 // Types
@@ -264,6 +317,13 @@ export interface SpecialClosure {
   periods?: { open: string; close: string }[];
 }
 
+export interface MenuImage {
+  id: string;
+  imageUrl: string;
+  cloudinaryPublicId: string;
+  sortOrder: number;
+}
+
 export interface Menu {
   id: string;
   name: string;
@@ -273,7 +333,7 @@ export interface Menu {
   isActive: boolean;
   sortOrder: number;
   sections: MenuSection[];
-  pdfUrl?: string;
+  images: MenuImage[];
   imageUrl?: string;
   eventDateRange?: {
     start: string;

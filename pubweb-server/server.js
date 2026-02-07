@@ -116,6 +116,20 @@ const updatePageRoute = require('./routes/pages/update_page');
 app.use('/api/pages', getPageRoute);
 app.use('/api/pages', updatePageRoute);
 
+// Cloudinary routes
+const signUploadRoute = require('./routes/cloudinary/sign_upload');
+app.use('/api/cloudinary', signUploadRoute);
+
+// Menu image routes
+const uploadMenuImageRoute = require('./routes/menu-images/upload_image');
+const deleteMenuImageRoute = require('./routes/menu-images/delete_image');
+const replaceMenuImageRoute = require('./routes/menu-images/replace_image');
+const reorderMenuImagesRoute = require('./routes/menu-images/reorder_images');
+app.use('/api/menu-images', uploadMenuImageRoute);
+app.use('/api/menu-images', deleteMenuImageRoute);
+app.use('/api/menu-images', replaceMenuImageRoute);
+app.use('/api/menu-images', reorderMenuImagesRoute);
+
 // Gallery routes
 const getGalleryRoute = require('./routes/gallery/get_gallery');
 const uploadGalleryImageRoute = require('./routes/gallery/upload_image');

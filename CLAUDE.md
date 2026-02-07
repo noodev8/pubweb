@@ -11,5 +11,6 @@ Acceptable exceptions (after discussion):
 ## Code Standards
 
 - Use Next.js `<Image>` component instead of `<img>` tags for automatic optimization
+- Never use the `unoptimized` prop on `<Image>` — configure `remotePatterns` in `next.config.ts` instead. `unoptimized` bypasses Next.js image optimization and is a workaround, not a fix.
 - Fix unused variables - don't leave dead code
 - Keep dependencies up to date

@@ -137,6 +137,7 @@ export const mockMenus: Menu[] = [
     description: 'Served Wednesday to Saturday, 12pm - 2:30pm',
     isActive: true,
     isEvent: false,
+    images: [],
     sortOrder: 1,
     sections: [
       {
@@ -196,6 +197,7 @@ export const mockMenus: Menu[] = [
     description: 'Served Wednesday to Saturday, 6pm - 9pm',
     isActive: true,
     isEvent: false,
+    images: [],
     sortOrder: 2,
     sections: [
       {
@@ -281,6 +283,7 @@ export const mockMenus: Menu[] = [
     description: 'Served Sundays, 12pm - 4pm. Booking recommended.',
     isActive: true,
     isEvent: false,
+    images: [],
     sortOrder: 3,
     sections: [
       {
@@ -327,6 +330,7 @@ export const mockMenus: Menu[] = [
     description: 'Treat Mum to a special lunch at The Nags Head. Booking essential.',
     isActive: false, // Would be set to true closer to the date
     isEvent: true,
+    images: [],
     eventDateRange: {
       start: '2025-03-30',
       end: '2025-03-30',

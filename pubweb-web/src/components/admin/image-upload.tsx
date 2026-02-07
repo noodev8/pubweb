@@ -2,12 +2,14 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import { cloudinaryLoader } from '@/lib/cloudinary';
 import { Button } from '@/components/ui/button';
 import { ImageIcon, X, Upload, Loader2 } from 'lucide-react';
+import { signCloudinaryUpload } from '@/lib/api';
 
 interface ImageUploadProps {
   currentImageUrl?: string;
-  onUpload: (url: string) => Promise<void>;
+  onUpload: (url: string, cloudinaryPublicId: string) => Promise<void>;
   onRemove: () => Promise<void>;
 }
 
@@ -35,17 +37,25 @@ export function ImageUpload({ currentImageUrl, onUpload, onRemove }: ImageUpload
     setIsUploading(true);
 
     try {
-      // Upload to Cloudinary
+      // Get a signed upload signature from our server
+      const sig = await signCloudinaryUpload('pubweb/menus');
+      if (sig.return_code !== 'SUCCESS') {
+        throw new Error(sig.message || 'Failed to get upload signature');
+      }
+
+      // Upload to Cloudinary using signed parameters
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '');
-      formData.append('folder', 'pubweb/menus');
-      // Cap stored image at 2000px — reduces storage costs permanently
-      formData.append('transformation', 'c_limit,w_2000,h_2000,q_auto');
+      formData.append('api_key', sig.api_key);
+      formData.append('timestamp', sig.timestamp.toString());
+      formData.append('signature', sig.signature);
+      formData.append('folder', sig.folder);
+      if (sig.transformation) {
+        formData.append('transformation', sig.transformation);
+      }
 
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`,
         {
           method: 'POST',
           body: formData,
@@ -57,7 +67,7 @@ export function ImageUpload({ currentImageUrl, onUpload, onRemove }: ImageUpload
       }
 
       const data = await response.json();
-      await onUpload(data.secure_url);
+      await onUpload(data.secure_url, data.public_id);
     } catch (error) {
       console.error('Upload error:', error);
       alert('Failed to upload image. Please try again.');
@@ -101,9 +111,9 @@ export function ImageUpload({ currentImageUrl, onUpload, onRemove }: ImageUpload
             alt="Menu image"
             width={448}
             height={200}
+            loader={currentImageUrl.includes('cloudinary') ? cloudinaryLoader : undefined}
             className="w-full rounded-lg border object-cover"
             style={{ maxHeight: '200px' }}
-            unoptimized
           />
           <Button
             variant="destructive"

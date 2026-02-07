@@ -102,7 +102,7 @@ router.post('/get_menus', async (req, res) => {
     const menusResult = await query(
       `SELECT
         m.id as menu_id, m.name as menu_name, m.slug, m.description as menu_description,
-        m.type, m.is_active, m.sort_order as menu_sort_order, m.pdf_url, m.image_url,
+        m.type, m.is_active, m.sort_order as menu_sort_order, m.pdf_url, m.image_url, m.image_cloudinary_public_id,
         m.event_start, m.event_end,
         s.id as section_id, s.name as section_name, s.description as section_description,
         s.sort_order as section_sort_order,
@@ -120,6 +120,30 @@ router.post('/get_menus', async (req, res) => {
       [venue_id]
     );
 
+    // Fetch menu images separately (simpler than adding another JOIN dimension)
+    const menuImagesResult = await query(
+      `SELECT mi.id, mi.menu_id, mi.image_url, mi.cloudinary_public_id, mi.sort_order
+       FROM menu_images mi
+       JOIN menus m ON m.id = mi.menu_id
+       WHERE m.venue_id = $1
+       ORDER BY mi.sort_order`,
+      [venue_id]
+    );
+
+    // Group images by menu_id
+    const imagesByMenu = new Map();
+    for (const row of menuImagesResult.rows) {
+      if (!imagesByMenu.has(row.menu_id)) {
+        imagesByMenu.set(row.menu_id, []);
+      }
+      imagesByMenu.get(row.menu_id).push({
+        id: row.id.toString(),
+        imageUrl: row.image_url,
+        cloudinaryPublicId: row.cloudinary_public_id,
+        sortOrder: row.sort_order
+      });
+    }
+
     // Transform flat result into nested structure
     // Using Maps to efficiently build the hierarchy without duplicates
     const menusMap = new Map();
@@ -128,6 +152,7 @@ router.post('/get_menus', async (req, res) => {
     for (const row of menusResult.rows) {
       // Get or create menu
       if (!menusMap.has(row.menu_id)) {
+        const menuImages = imagesByMenu.get(row.menu_id) || [];
         menusMap.set(row.menu_id, {
           id: row.menu_id.toString(),
           name: row.menu_name,
@@ -137,7 +162,10 @@ router.post('/get_menus', async (req, res) => {
           isActive: row.is_active,
           sortOrder: row.menu_sort_order,
           pdfUrl: row.pdf_url || undefined,
-          imageUrl: row.image_url || undefined,
+          // Backward compat: imageUrl from first menu_image, or fall back to legacy column
+          imageUrl: (menuImages.length > 0 ? menuImages[0].imageUrl : row.image_url) || undefined,
+          imageCloudinaryPublicId: row.image_cloudinary_public_id || undefined,
+          images: menuImages,
           eventDateRange: row.event_start && row.event_end ? {
             start: row.event_start.toISOString().split('T')[0],
             end: row.event_end.toISOString().split('T')[0]

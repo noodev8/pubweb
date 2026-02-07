@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import { cloudinaryLoader } from '@/lib/cloudinary';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -195,8 +196,9 @@ export function GallerySlot({
             src={image.imageUrl}
             alt={image.caption || 'Gallery image'}
             fill
+            loader={image.imageUrl.includes('cloudinary') ? cloudinaryLoader : undefined}
             className="object-cover"
-            unoptimized
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
           {isUploading && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

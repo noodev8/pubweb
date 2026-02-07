@@ -101,16 +101,6 @@ function EventMenuCard({ menu }: { menu: Menu }) {
 
         {/* Links */}
         <div className="flex flex-wrap gap-4 mt-6">
-          {menu.pdfUrl && (
-            <a
-              href={menu.pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
-            >
-              Download Menu (PDF) →
-            </a>
-          )}
           <Link
             href="/contact"
             className="text-sm text-amber-600 hover:text-amber-700 transition-colors"

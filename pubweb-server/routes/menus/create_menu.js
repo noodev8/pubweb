@@ -4,6 +4,7 @@ API Route: create_menu
 =======================================================================
 Method: POST
 Purpose: Creates a new menu for a venue. Requires authentication.
+         Note: Menu images are managed through /api/menu-images/ routes.
 =======================================================================
 Request Payload:
 {
@@ -14,8 +15,6 @@ Request Payload:
   "type": "regular",                   // string, optional (regular|event|drinks)
   "isActive": true,                    // boolean, optional (default true)
   "sortOrder": 1,                      // integer, optional (default 0)
-  "pdfUrl": "https://...",             // string, optional
-  "imageUrl": "https://...",           // string, optional
   "eventDateRange": {                  // object, optional (for event menus)
     "start": "2024-12-24",
     "end": "2024-12-26"
@@ -49,7 +48,7 @@ router.post('/create_menu', verifyToken, async (req, res) => {
   try {
     const {
       venue_id, name, slug, description, type = 'regular',
-      isActive = true, sortOrder = 0, pdfUrl, imageUrl, eventDateRange
+      isActive = true, sortOrder = 0, eventDateRange
     } = req.body;
 
     // Validate required fields
@@ -91,8 +90,8 @@ router.post('/create_menu', verifyToken, async (req, res) => {
 
     // Insert menu
     const result = await query(
-      `INSERT INTO menus (venue_id, name, slug, description, type, is_active, sort_order, pdf_url, image_url, event_start, event_end)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      `INSERT INTO menus (venue_id, name, slug, description, type, is_active, sort_order, event_start, event_end)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id`,
       [
         venue_id,
@@ -102,8 +101,6 @@ router.post('/create_menu', verifyToken, async (req, res) => {
         type,
         isActive,
         sortOrder,
-        pdfUrl || null,
-        imageUrl || null,
         eventDateRange?.start || null,
         eventDateRange?.end || null
       ]

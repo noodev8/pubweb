@@ -90,6 +90,13 @@ export interface SpecialClosure {
 // MENUS
 // =============================================================================
 
+export interface MenuImage {
+  id: string
+  imageUrl: string
+  cloudinaryPublicId: string
+  sortOrder: number
+}
+
 export interface Menu {
   id: string
   name: string                  // "Evening Menu", "Sunday Lunch", "Mother's Day 2025"
@@ -98,8 +105,8 @@ export interface Menu {
   isActive: boolean             // Controlled by admin, frontend just respects this
   isEvent: boolean              // True for special occasion menus
   eventDateRange?: DateRange    // When this special menu is available (display only)
-  pdfUrl?: string               // Optional PDF version
-  imageUrl?: string             // Optional JPG/image version
+  imageUrl?: string             // First image URL (backward compat / thumbnail)
+  images: MenuImage[]           // All menu page images
   sections: MenuSection[]
   sortOrder: number             // Admin controls display order
 }

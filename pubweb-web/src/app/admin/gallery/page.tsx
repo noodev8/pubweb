@@ -69,58 +69,79 @@ export default function GalleryPage() {
   }, [images, originalImages]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
+    const files = e.target.files;
+    if (!files || files.length === 0 || !user) return;
 
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      toast.error('Please select a JPG, PNG, or WebP image');
-      return;
+    // Validate all files first
+    const validFiles: File[] = [];
+    for (const file of Array.from(files)) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        toast.error(`${file.name}: must be JPG, PNG, or WebP`);
+        continue;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name}: must be less than 5MB`);
+        continue;
+      }
+      validFiles.push(file);
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
-      return;
+    if (validFiles.length === 0) return;
+
+    // Check we won't exceed the limit
+    const remaining = MAX_IMAGES - images.length;
+    if (validFiles.length > remaining) {
+      toast.error(`Can only add ${remaining} more image${remaining === 1 ? '' : 's'} (max ${MAX_IMAGES})`);
+      if (remaining === 0) return;
+      validFiles.splice(remaining);
     }
 
     setIsUploading(true);
 
     try {
-      const sig = await signCloudinaryUpload('pubweb/gallery');
-      if (sig.return_code !== 'SUCCESS') {
-        throw new Error(sig.message || 'Failed to get upload signature');
+      let uploaded = 0;
+      for (const file of validFiles) {
+        const sig = await signCloudinaryUpload('pubweb/gallery');
+        if (sig.return_code !== 'SUCCESS') {
+          throw new Error(sig.message || 'Failed to get upload signature');
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('api_key', sig.api_key);
+        formData.append('timestamp', sig.timestamp.toString());
+        formData.append('signature', sig.signature);
+        formData.append('folder', sig.folder);
+        if (sig.transformation) {
+          formData.append('transformation', sig.transformation);
+        }
+
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`,
+          { method: 'POST', body: formData }
+        );
+
+        if (!response.ok) throw new Error('Upload failed');
+
+        const data = await response.json();
+
+        const res = await uploadGalleryImage(user.venue_id, data.secure_url, data.public_id);
+        if (res.return_code === 'SUCCESS') {
+          uploaded++;
+        } else if (res.return_code === 'SLOT_LIMIT_REACHED') {
+          toast.error(`Maximum of ${MAX_IMAGES} images reached`);
+          break;
+        } else {
+          toast.error(res.message || `Failed to upload ${file.name}`);
+        }
       }
-
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('api_key', sig.api_key);
-      formData.append('timestamp', sig.timestamp.toString());
-      formData.append('signature', sig.signature);
-      formData.append('folder', sig.folder);
-      if (sig.transformation) {
-        formData.append('transformation', sig.transformation);
-      }
-
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`,
-        { method: 'POST', body: formData }
-      );
-
-      if (!response.ok) throw new Error('Upload failed');
-
-      const data = await response.json();
-
-      const res = await uploadGalleryImage(user.venue_id, data.secure_url, data.public_id);
-      if (res.return_code === 'SUCCESS') {
-        toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      if (uploaded > 0) {
+        toast.success(`${uploaded} image${uploaded === 1 ? '' : 's'} uploaded! Changes will appear on your website within 60 seconds.`);
         await loadGallery();
-      } else if (res.return_code === 'SLOT_LIMIT_REACHED') {
-        toast.error(`Maximum of ${MAX_IMAGES} images allowed`);
-      } else {
-        toast.error(res.message || 'Failed to upload image');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload image. Please try again.');
+      toast.error('Failed to upload images. Please try again.');
     } finally {
       setIsUploading(false);
       if (uploadInputRef.current) uploadInputRef.current.value = '';
@@ -231,7 +252,7 @@ export default function GalleryPage() {
         ref={uploadInputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp"
-        capture="environment"
+        multiple
         onChange={handleFileSelect}
         className="hidden"
         disabled={isSaving || isUploading}
