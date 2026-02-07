@@ -36,7 +36,7 @@ async function apiCall<T>(endpoint: string, body: object): Promise<T | null> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      next: { revalidate: 0 }, // No cache (testing)
+      next: { revalidate: 60 },
     })
     const data = await response.json()
     if (data.return_code === 'SUCCESS') {
