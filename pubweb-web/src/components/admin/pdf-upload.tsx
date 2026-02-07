@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileText, X, Upload, Loader2, ExternalLink } from 'lucide-react';
+import { signCloudinaryUpload } from '@/lib/api';
 
 interface PdfUploadProps {
   currentPdfUrl?: string;
@@ -34,16 +35,23 @@ export function PdfUpload({ currentPdfUrl, onUpload, onRemove }: PdfUploadProps)
     setIsUploading(true);
 
     try {
-      // Upload to Cloudinary as image type (Cloudinary supports PDFs as images)
-      // This ensures proper Content-Type headers when serving the file
+      // Get a signed upload signature from our server
+      const sig = await signCloudinaryUpload('pubweb/menus/pdf');
+      if (sig.return_code !== 'SUCCESS') {
+        throw new Error(sig.message || 'Failed to get upload signature');
+      }
+
+      // Upload to Cloudinary using signed parameters
+      // Cloudinary supports PDFs as images — ensures proper Content-Type headers
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '');
-      formData.append('folder', 'pubweb/menus/pdf');
+      formData.append('api_key', sig.api_key);
+      formData.append('timestamp', sig.timestamp.toString());
+      formData.append('signature', sig.signature);
+      formData.append('folder', sig.folder);
 
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`,
         {
           method: 'POST',
           body: formData,

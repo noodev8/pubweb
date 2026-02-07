@@ -1,0 +1,6 @@
+Dry-run - shows orphans without deleting:
+node pubweb-server/scripts/clean-cloudinary.js
+
+Delete orphans - actually removes them from Cloudinary:
+node pubweb-server/scripts/clean-cloudinary.js --delete
+
