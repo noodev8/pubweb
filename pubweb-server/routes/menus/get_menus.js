@@ -102,7 +102,7 @@ router.post('/get_menus', async (req, res) => {
     const menusResult = await query(
       `SELECT
         m.id as menu_id, m.name as menu_name, m.slug, m.description as menu_description,
-        m.type, m.is_active, m.sort_order as menu_sort_order, m.pdf_url, m.image_url, m.image_cloudinary_public_id,
+        m.type, m.is_active, m.sort_order as menu_sort_order,
         m.event_start, m.event_end,
         s.id as section_id, s.name as section_name, s.description as section_description,
         s.sort_order as section_sort_order,
@@ -161,10 +161,7 @@ router.post('/get_menus', async (req, res) => {
           type: row.type,
           isActive: row.is_active,
           sortOrder: row.menu_sort_order,
-          pdfUrl: row.pdf_url || undefined,
-          // Backward compat: imageUrl from first menu_image, or fall back to legacy column
-          imageUrl: (menuImages.length > 0 ? menuImages[0].imageUrl : row.image_url) || undefined,
-          imageCloudinaryPublicId: row.image_cloudinary_public_id || undefined,
+          imageUrl: menuImages.length > 0 ? menuImages[0].imageUrl : undefined,
           images: menuImages,
           eventDateRange: row.event_start && row.event_end ? {
             start: row.event_start.toISOString().split('T')[0],
