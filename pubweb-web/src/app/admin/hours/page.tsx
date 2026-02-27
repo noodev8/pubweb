@@ -41,18 +41,19 @@ export default function HoursPage() {
   const loadHours = async () => {
     if (!user) return;
     const res = await getHours(user.venue_id);
-    if (res.return_code === 'SUCCESS' && res.hours) {
+    const defaultHours: OpeningHours = {
+      regular: DAYS.map((day) => ({
+        day,
+        isClosed: false,
+        periods: [{ open: '12:00', close: '23:00' }],
+      })),
+      specialNotice: '',
+    };
+
+    if (res.return_code === 'SUCCESS' && res.hours && (res.hours as unknown as OpeningHours).regular?.length > 0) {
       setHours(res.hours as unknown as OpeningHours);
-    } else if (res.return_code !== 'SUCCESS') {
-      // Initialize with empty hours if none exist
-      setHours({
-        regular: DAYS.map((day) => ({
-          day,
-          isClosed: false,
-          periods: [{ open: '12:00', close: '23:00' }],
-        })),
-        specialNotice: '',
-      });
+    } else {
+      setHours(defaultHours);
     }
     setIsLoading(false);
   };
