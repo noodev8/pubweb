@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Source_Sans_3 } from 'next/font/google'
 import './globals.css'
 import { Header, Footer } from '@/components/layout'
-import { getVenueInfo, getOpeningHours, getAccommodation } from '@/lib/services/venue'
+import { getVenueInfo, getOpeningHours } from '@/lib/services/venue'
 
 const playfair = Playfair_Display({
   variable: '--font-playfair',
@@ -30,10 +30,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [venue, hours, accommodation] = await Promise.all([
+  const [venue, hours] = await Promise.all([
     getVenueInfo(),
     getOpeningHours(),
-    getAccommodation(),
   ])
 
   return (
@@ -44,7 +43,6 @@ export default async function RootLayout({
         <div className="flex min-h-screen flex-col">
           <Header
             venueName={venue.name}
-            bookingUrl={accommodation?.bookingUrl}
             transparent
           />
           <main className="flex-grow">{children}</main>

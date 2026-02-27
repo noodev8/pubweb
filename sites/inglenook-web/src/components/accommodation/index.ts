@@ -1,1 +1,0 @@
-export { AccommodationHeroCarousel } from './AccommodationHeroCarousel'

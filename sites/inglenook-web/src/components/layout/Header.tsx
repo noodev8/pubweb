@@ -5,7 +5,6 @@ import { siteConfig } from '@/lib/config'
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Accommodation', href: '/accommodation' },
   { name: 'Restaurant', href: '/restaurant' },
   { name: 'Menus', href: '/menus' },
   { name: 'Gallery', href: '/gallery' },

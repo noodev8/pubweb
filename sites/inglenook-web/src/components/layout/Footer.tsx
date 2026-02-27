@@ -73,11 +73,6 @@ export function Footer({ venue, hours }: FooterProps) {
                 </Link>
               </li>
               <li>
-                <Link href="/accommodation" className="block py-2 hover:text-white transition-colors">
-                  Book a Room
-                </Link>
-              </li>
-              <li>
                 <Link href="/contact" className="block py-2 hover:text-white transition-colors">
                   Find Us
                 </Link>

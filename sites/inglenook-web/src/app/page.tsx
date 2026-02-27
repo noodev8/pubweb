@@ -22,7 +22,7 @@ export default async function HomePage() {
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white mb-4 drop-shadow-lg">
                   {venue.name},
                   <br />
-                  Garthmyl
+                  {venue.address.town}
                 </h1>
                 <Link
                   href="/restaurant"
@@ -48,7 +48,7 @@ export default async function HomePage() {
             </h2>
             <p className="text-stone-600 text-lg mb-4">
               {venue.name} is a Grade 2 listed former coaching inn, offering AA Rosette award-winning
-              dining and 5-star accommodation. Set in the picturesque village of Garthmyl, we combine
+              dining and 5-star accommodation. Set in the picturesque town of {venue.address.town}, we combine
               traditional hospitality with contemporary comfort.
             </p>
             <p className="text-stone-600 text-lg">
@@ -102,50 +102,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Accommodation Section */}
-      <section className="py-16 lg:py-24 overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1">
-              <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">
-                5★ Quality and Comfort
-              </h2>
-              <p className="text-stone-600 mb-4">
-                Our eight beautifully appointed en-suite bedrooms are designed with Laura Ashley
-                furnishings throughout, offering the perfect blend of traditional charm and
-                modern comfort.
-              </p>
-              <p className="text-stone-600 mb-6">
-                Whether you&apos;re visiting for business, shooting locally, seeing family, or
-                exploring the unspoilt countryside, {venue.name} provides an ideal base for
-                your stay in Mid Wales.
-              </p>
-              <a
-                href={siteConfig.bookingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
-              >
-                Book Your Stay
-              </a>
-            </div>
-            <div className="relative order-1 md:order-2">
-              {/* Hexagon Pattern - behind image */}
-              <HexagonPattern className="absolute -right-16 -top-16 w-64 h-64 opacity-60 hidden md:block" />
-              <div className="relative aspect-[4/3] overflow-hidden z-10">
-                <Image
-                  src="/images/bedroom.jpg"
-                  alt="Luxury bedroom with Laura Ashley furnishings"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              {/* Hexagon Pattern - extends below */}
-              <HexagonPattern className="absolute -left-8 -bottom-12 w-48 h-48 opacity-60 hidden md:block" />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Explore the Area Section */}
       <section className="py-16 lg:py-24 bg-stone-100">
