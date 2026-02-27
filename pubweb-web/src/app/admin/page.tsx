@@ -65,7 +65,7 @@ export default function DashboardPage() {
     },
     {
       title: 'Gallery',
-      description: `${galleryImages.length} of 9 images`,
+      description: `${galleryImages.length} image${galleryImages.length !== 1 ? 's' : ''}`,
       icon: Images,
       href: '/admin/gallery',
       color: 'bg-purple-500',
