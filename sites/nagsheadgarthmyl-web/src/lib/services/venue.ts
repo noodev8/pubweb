@@ -12,7 +12,7 @@ import {
   MenuImage,
   Accommodation,
   Attraction,
-  GalleryImage,
+  GalleryResponse,
   PageContent,
 } from '@/types'
 
@@ -157,9 +157,16 @@ export async function getAttractions(): Promise<Attraction[]> {
 // GALLERY
 // =============================================================================
 
-export async function getGalleryImages(): Promise<GalleryImage[]> {
+export async function getGalleryImages(limit?: number, offset?: number): Promise<GalleryResponse> {
+  const body: Record<string, number> = { venue_id: parseInt(VENUE_ID) }
+  if (limit != null) {
+    body.limit = limit
+    body.offset = offset ?? 0
+  }
+
   const data = await apiCall<{
     return_code: string
+    totalCount: number
     images: Array<{
       id: string
       imageUrl: string
@@ -167,20 +174,24 @@ export async function getGalleryImages(): Promise<GalleryImage[]> {
       caption: string
       sortOrder: number
     }>
-  }>('/api/gallery/get_gallery', { venue_id: parseInt(VENUE_ID) })
+  }>('/api/gallery/get_gallery', body)
 
   if (data?.images && data.images.length > 0) {
-    return data.images.map((img) => ({
-      id: img.id,
-      src: img.imageUrl,
-      alt: img.caption || 'Gallery image',
-      caption: img.caption || undefined,
-      sortOrder: img.sortOrder,
-    }))
+    return {
+      images: data.images.map((img) => ({
+        id: img.id,
+        src: img.imageUrl,
+        alt: img.caption || 'Gallery image',
+        caption: img.caption || undefined,
+        sortOrder: img.sortOrder,
+      })),
+      totalCount: data.totalCount,
+    }
   }
 
   // Fall back to mock data if API returns empty or fails
-  return mockGallery.sort((a, b) => a.sortOrder - b.sortOrder)
+  const sorted = mockGallery.sort((a, b) => a.sortOrder - b.sortOrder)
+  return { images: sorted, totalCount: sorted.length }
 }
 
 // =============================================================================

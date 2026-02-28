@@ -3,12 +3,15 @@
 API Route: get_gallery
 =======================================================================
 Method: POST
-Purpose: Returns all gallery images for a venue, ordered by sort_order.
+Purpose: Returns gallery images for a venue, ordered by sort_order.
+         Supports optional pagination via limit/offset.
          Public endpoint (no auth required).
 =======================================================================
 Request Payload:
 {
-  "venue_id": 1                        // integer, required
+  "venue_id": 1,                       // integer, required
+  "limit": 12,                         // integer, optional — omit to return all
+  "offset": 0                          // integer, optional — defaults to 0
 }
 
 Success Response:
@@ -22,7 +25,8 @@ Success Response:
       "caption": "Mother's Day Special",
       "sortOrder": 0
     }
-  ]
+  ],
+  "totalCount": 25
 }
 =======================================================================
 Return Codes:
@@ -60,14 +64,35 @@ router.post('/get_gallery', async (req, res) => {
       });
     }
 
-    // Get all gallery images for venue
-    const result = await query(
-      `SELECT id, image_url, cloudinary_public_id, caption, sort_order
-       FROM gallery_images
-       WHERE venue_id = $1
-       ORDER BY sort_order ASC, id ASC`,
+    const { limit, offset } = req.body;
+
+    // Get total count of gallery images for venue
+    const countResult = await query(
+      'SELECT COUNT(*) FROM gallery_images WHERE venue_id = $1',
       [venue_id]
     );
+    const totalCount = parseInt(countResult.rows[0].count, 10);
+
+    // Get gallery images, with optional pagination
+    let result;
+    if (limit != null) {
+      result = await query(
+        `SELECT id, image_url, cloudinary_public_id, caption, sort_order
+         FROM gallery_images
+         WHERE venue_id = $1
+         ORDER BY sort_order ASC, id ASC
+         LIMIT $2 OFFSET $3`,
+        [venue_id, limit, offset || 0]
+      );
+    } else {
+      result = await query(
+        `SELECT id, image_url, cloudinary_public_id, caption, sort_order
+         FROM gallery_images
+         WHERE venue_id = $1
+         ORDER BY sort_order ASC, id ASC`,
+        [venue_id]
+      );
+    }
 
     const images = result.rows.map(row => ({
       id: String(row.id),
@@ -79,7 +104,8 @@ router.post('/get_gallery', async (req, res) => {
 
     return res.json({
       return_code: 'SUCCESS',
-      images
+      images,
+      totalCount
     });
 
   } catch (error) {

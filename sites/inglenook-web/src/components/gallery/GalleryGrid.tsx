@@ -6,11 +6,13 @@ import Lightbox from 'yet-another-react-lightbox'
 import Captions from 'yet-another-react-lightbox/plugins/captions'
 import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/captions.css'
-import { GalleryImage } from '@/types'
+import { GalleryImage, GalleryResponse } from '@/types'
 import { cloudinaryLoader, optimisedUrl } from '@/lib/cloudinary'
 
 interface GalleryGridProps {
-  images: GalleryImage[]
+  initialImages: GalleryImage[]
+  totalCount: number
+  batchSize: number
 }
 
 function GalleryThumbnail({
@@ -59,9 +61,24 @@ function GalleryThumbnail({
   )
 }
 
-export function GalleryGrid({ images }: GalleryGridProps) {
+export function GalleryGrid({ initialImages, totalCount, batchSize }: GalleryGridProps) {
+  const [images, setImages] = useState<GalleryImage[]>(initialImages)
+  const [loading, setLoading] = useState(false)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+
+  const hasMore = images.length < totalCount
+
+  const loadMore = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/gallery?limit=${batchSize}&offset=${images.length}`)
+      const data: GalleryResponse = await res.json()
+      setImages(prev => [...prev, ...data.images])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index)
@@ -100,6 +117,19 @@ export function GalleryGrid({ images }: GalleryGridProps) {
           />
         ))}
       </div>
+
+      {hasMore && (
+        <div className="flex justify-center mt-8 sm:mt-12">
+          <button
+            type="button"
+            onClick={loadMore}
+            disabled={loading}
+            className="px-8 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5e1515] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Loading...' : 'Load More'}
+          </button>
+        </div>
+      )}
 
       <Lightbox
         open={lightboxOpen}

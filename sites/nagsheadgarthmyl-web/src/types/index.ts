@@ -223,6 +223,11 @@ export interface GalleryImage {
   sortOrder: number
 }
 
+export interface GalleryResponse {
+  images: GalleryImage[]
+  totalCount: number
+}
+
 // =============================================================================
 // PAGE CONTENT (for flexible sections)
 // =============================================================================

@@ -43,7 +43,7 @@ export function Header({ venueName, transparent = false }: HeaderProps) {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-base font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] hover:text-white/80 transition-colors"
+                className="text-lg font-semibold text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.9),_0_2px_8px_rgba(0,0,0,0.6)] hover:text-white/80 transition-colors"
               >
                 {item.name}
               </Link>

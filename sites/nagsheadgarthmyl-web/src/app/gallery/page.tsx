@@ -3,10 +3,12 @@ import { GalleryGrid } from '@/components/gallery'
 import { getVenueInfo, getGalleryImages } from '@/lib/services/venue'
 import { siteConfig } from '@/lib/config'
 
+const BATCH_SIZE = 12
+
 export default async function GalleryPage() {
-  const [venue, images] = await Promise.all([
+  const [venue, gallery] = await Promise.all([
     getVenueInfo(),
-    getGalleryImages(),
+    getGalleryImages(BATCH_SIZE, 0),
   ])
 
   return (
@@ -35,7 +37,11 @@ export default async function GalleryPage() {
       {/* Gallery Grid */}
       <section className="py-6 sm:py-12 lg:py-16 bg-stone-100">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-          <GalleryGrid images={images} />
+          <GalleryGrid
+            initialImages={gallery.images}
+            totalCount={gallery.totalCount}
+            batchSize={BATCH_SIZE}
+          />
         </div>
       </section>
 
