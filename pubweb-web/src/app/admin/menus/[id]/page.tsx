@@ -68,7 +68,7 @@ export default function MenuEditPage() {
     });
 
     if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
     } else {
       toast.error(res.message || 'Failed to save menu');
     }
@@ -145,7 +145,7 @@ export default function MenuEditPage() {
         }
       }
       if (uploaded > 0) {
-        toast.success(`${uploaded} image${uploaded === 1 ? '' : 's'} uploaded! Changes will appear on your website within 60 seconds.`);
+        toast.success(`${uploaded} image${uploaded === 1 ? '' : 's'} uploaded!`);
         await loadMenu();
       }
     } catch {
@@ -159,7 +159,7 @@ export default function MenuEditPage() {
   const handleDelete = async (imageId: string) => {
     const res = await deleteMenuImage(parseInt(imageId));
     if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
       await loadMenu();
     } else {
       toast.error(res.message || 'Failed to delete image');
@@ -176,7 +176,7 @@ export default function MenuEditPage() {
     const order = reordered.map((img, i) => ({ id: img.id, sortOrder: i }));
     const res = await reorderMenuImages(menuId, order);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
     } else {
       toast.error('Failed to reorder images');
       await loadMenu();
@@ -193,7 +193,7 @@ export default function MenuEditPage() {
     const order = reordered.map((img, i) => ({ id: img.id, sortOrder: i }));
     const res = await reorderMenuImages(menuId, order);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
     } else {
       toast.error('Failed to reorder images');
       await loadMenu();

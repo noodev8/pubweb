@@ -36,6 +36,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// Auto-flag unpublished changes on mutating routes
+const unpublishedMiddleware = require('./middleware/unpublished');
+app.use(unpublishedMiddleware);
+
 // =======================================================================
 // Routes
 // =======================================================================
@@ -47,8 +51,12 @@ app.use('/api/auth', loginRoute);
 // Venue routes
 const getVenueRoute = require('./routes/venue/get_venue');
 const updateVenueRoute = require('./routes/venue/update_venue');
+const getPublishStatusRoute = require('./routes/venue/get_publish_status');
+const deployVenueRoute = require('./routes/venue/deploy_venue');
 app.use('/api/venue', getVenueRoute);
 app.use('/api/venue', updateVenueRoute);
+app.use('/api/venue', getPublishStatusRoute);
+app.use('/api/venue', deployVenueRoute);
 
 // Hours routes
 const getHoursRoute = require('./routes/hours/get_hours');

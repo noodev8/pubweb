@@ -136,7 +136,7 @@ export default function GalleryPage() {
         }
       }
       if (uploaded > 0) {
-        toast.success(`${uploaded} image${uploaded === 1 ? '' : 's'} uploaded! Changes will appear on your website within 60 seconds.`);
+        toast.success(`${uploaded} image${uploaded === 1 ? '' : 's'} uploaded!`);
         await loadGallery();
       }
     } catch (error) {
@@ -151,7 +151,7 @@ export default function GalleryPage() {
   const handleReplace = async (imageId: string, imageUrl: string, cloudinaryPublicId: string) => {
     const res = await replaceGalleryImage(parseInt(imageId), imageUrl, cloudinaryPublicId);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
       await loadGallery();
     } else {
       toast.error(res.message || 'Failed to replace image');
@@ -161,7 +161,7 @@ export default function GalleryPage() {
   const handleDelete = async (imageId: string) => {
     const res = await deleteGalleryImage(parseInt(imageId));
     if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
       await loadGallery();
     } else {
       toast.error(res.message || 'Failed to delete image');
@@ -227,7 +227,7 @@ export default function GalleryPage() {
         }
       }
 
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
       await loadGallery();
     } catch (error) {
       console.error('Save error:', error);

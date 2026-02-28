@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth-context';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/admin/app-sidebar';
 import { Separator } from '@/components/ui/separator';
+import { PublishBanner } from '@/components/admin/publish-banner';
 
 export default function AdminLayout({
   children,
@@ -41,6 +42,7 @@ export default function AdminLayout({
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
         </header>
+        <PublishBanner />
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>

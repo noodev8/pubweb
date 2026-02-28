@@ -45,7 +45,7 @@ export default function VenuePage() {
     });
 
     if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
     } else {
       toast.error(res.message || 'Failed to save venue info');
     }

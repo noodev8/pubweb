@@ -69,7 +69,7 @@ export default function HoursPage() {
 
     const res = await updateHours(user.venue_id, hours);
     if (res.return_code === 'SUCCESS') {
-      toast.success('Saved! Changes will appear on your website within 60 seconds.');
+      toast.success('Saved!');
     } else {
       toast.error(res.message || 'Failed to save hours');
     }

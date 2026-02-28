@@ -11,6 +11,9 @@ interface ApiResponse<T = unknown> {
   [key: string]: T | string | undefined;
 }
 
+// Endpoints that don't represent content mutations
+const READ_ONLY_PATTERNS = ['/get_', '/login', '/deploy_venue', '/sign_upload', '/get_publish_status'];
+
 async function apiCall<T>(endpoint: string, data?: object): Promise<ApiResponse<T>> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
@@ -24,7 +27,18 @@ async function apiCall<T>(endpoint: string, data?: object): Promise<ApiResponse<
       body: JSON.stringify(data || {}),
     });
 
-    return await response.json();
+    const result = await response.json();
+
+    // Notify the publish banner when a mutating call succeeds
+    if (
+      typeof window !== 'undefined' &&
+      result.return_code === 'SUCCESS' &&
+      !READ_ONLY_PATTERNS.some((p) => endpoint.includes(p))
+    ) {
+      window.dispatchEvent(new Event('content-saved'));
+    }
+
+    return result;
   } catch (error) {
     console.error('API call failed:', error);
     return {
@@ -154,6 +168,17 @@ export async function getPage(venueId: number, page: string) {
 
 export async function updatePage(venueId: number, page: string, data: Partial<PageContent>) {
   return apiCall('/api/pages/update_page', { venue_id: venueId, page, ...data });
+}
+
+// Publish
+export async function getPublishStatus(venueId: number) {
+  return apiCall<{ has_unpublished_changes: boolean }>('/api/venue/get_publish_status', {
+    venue_id: venueId,
+  });
+}
+
+export async function deployVenue(venueId: number) {
+  return apiCall('/api/venue/deploy_venue', { venue_id: venueId });
 }
 
 // Cloudinary
