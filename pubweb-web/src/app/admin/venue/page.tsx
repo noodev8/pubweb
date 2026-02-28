@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Save } from 'lucide-react';
 
@@ -37,8 +36,6 @@ export default function VenuePage() {
 
     const res = await updateVenue(user.venue_id, {
       name: venue.name,
-      tagline: venue.tagline,
-      description: venue.description,
       address: venue.address,
       contact: venue.contact,
       social: venue.social,
@@ -81,7 +78,7 @@ export default function VenuePage() {
         <Card>
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Your venue name and description</CardDescription>
+            <CardDescription>Your venue name</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -89,26 +86,6 @@ export default function VenuePage() {
               <Input
                 value={venue.name}
                 onChange={(e) => setVenue({ ...venue, name: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Tagline</Label>
-              <Input
-                value={venue.tagline || ''}
-                onChange={(e) =>
-                  setVenue({ ...venue, tagline: e.target.value })
-                }
-                placeholder="A short catchy phrase"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={venue.description}
-                onChange={(e) =>
-                  setVenue({ ...venue, description: e.target.value })
-                }
-                rows={4}
               />
             </div>
           </CardContent>
