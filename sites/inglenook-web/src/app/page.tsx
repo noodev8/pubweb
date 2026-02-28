@@ -2,7 +2,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { HeroCarousel } from '@/components/home'
 import { HexagonPattern } from '@/components/ui'
-import { siteConfig } from '@/lib/config'
 import { getVenueInfo } from '@/lib/services/venue'
 
 export default async function HomePage() {
@@ -25,10 +24,10 @@ export default async function HomePage() {
                   {venue.address.town}
                 </h1>
                 <Link
-                  href="/restaurant"
+                  href="/menus"
                   className="inline-flex items-center gap-2 text-white/90 hover:text-white transition-colors group"
                 >
-                  <span className="border-b border-white/50 group-hover:border-white">Find Out More</span>
+                  <span className="border-b border-white/50 group-hover:border-white">View Our Menus</span>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                   </svg>
@@ -44,16 +43,17 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">
-              A Traditional Coaching Inn at the Heart of the Welsh Marches
+              Good Food, Honest Prices, a Warm Welcome
             </h2>
             <p className="text-stone-600 text-lg mb-4">
-              {venue.name} is a Grade 2 listed former coaching inn, offering AA Rosette award-winning
-              dining and 5-star accommodation. Set in the picturesque town of {venue.address.town}, we combine
-              traditional hospitality with contemporary comfort.
+              {venue.name} is a family-run cafe in the heart of {venue.address.town}, serving freshly
+              prepared breakfasts, lunches and homemade cakes using locally sourced ingredients
+              at prices that won&apos;t break the bank.
             </p>
             <p className="text-stone-600 text-lg">
-              Our kitchen has held an AA Rosette for five consecutive years, while our beautifully
-              appointed bedrooms have earned 5-star ratings from both AA and Visit Wales.
+              Whether you&apos;re popping in for a coffee, settling down for one of our famous
+              all-day breakfasts, or treating yourself to something from our daily specials,
+              you&apos;ll always find a friendly face and a cosy seat waiting for you.
             </p>
           </div>
         </div>
@@ -68,8 +68,8 @@ export default async function HomePage() {
               <HexagonPattern className="absolute -left-16 -bottom-16 w-64 h-64 opacity-60 hidden md:block" />
               <div className="relative aspect-[4/3] overflow-hidden z-10">
                 <Image
-                  src="/images/restaurant.jpg"
-                  alt={`${venue.name} restaurant interior`}
+                  src="/images/breakfast-1.jpg"
+                  alt={`Freshly prepared breakfast at ${venue.name}`}
                   fill
                   className="object-cover"
                 />
@@ -79,17 +79,17 @@ export default async function HomePage() {
             </div>
             <div>
               <h2 className="text-3xl lg:text-4xl font-serif text-stone-900 mb-6">
-                Local, Quality, Homemade Food
+                Breakfasts, Lunches &amp; Everything In Between
               </h2>
               <p className="text-stone-600 mb-4">
-                Our restaurant features oak floors, full height ceilings with open beams,
-                oak bookshelves and beautiful foliage throughout — creating a warm and
-                inviting atmosphere for your dining experience.
+                Start your day with one of our famous all-day breakfasts — choose from
+                Early Bird, Standard or go all out with the Mega. We also do a veggie
+                option and our omelettes are not to be missed.
               </p>
               <p className="text-stone-600 mb-6">
-                We source fresh, local produce six days per week and grow our own herbs,
-                ensuring every dish showcases the best of Welsh ingredients prepared with
-                care and creativity.
+                For lunch, tuck into a loaded jacket potato, a freshly made sandwich
+                or one of our daily specials. And don&apos;t leave without trying a slice
+                of our homemade cake.
               </p>
               <Link
                 href="/menus"
@@ -111,8 +111,8 @@ export default async function HomePage() {
               Explore the Area
             </h2>
             <p className="text-stone-600 max-w-2xl mx-auto text-lg">
-              Situated on the A483, {venue.name} is perfectly placed for exploring the stunning
-              Welsh countryside, with the Montgomeryshire Canal running a mere 20 yards from our door.
+              {venue.name} is right in the heart of {venue.address.town}, perfectly placed for exploring
+              the stunning mid-Wales countryside, historic castles and beautiful lakes.
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
@@ -156,46 +156,6 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
-          <div className="text-center mt-8">
-            <Link
-              href="/explore"
-              className="text-[#7A1B1B] font-medium hover:text-[#5C1414] transition-colors"
-            >
-              Discover more local attractions →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Awards Section */}
-      <section className="py-16 lg:py-20 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-serif text-stone-900 text-center mb-10">
-            Awards &amp; Accolades
-          </h2>
-          <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-12">
-            <Image
-              src="/images/award-top50.jpg"
-              alt="Top 50 Gastropubs"
-              width={240}
-              height={240}
-              className="h-44 w-auto"
-            />
-            <Image
-              src="/images/aa-gac-inn-5star.png"
-              alt="AA 5 Star Inn"
-              width={240}
-              height={240}
-              className="h-44 w-auto"
-            />
-            <Image
-              src="/images/aa-1-rosette-2025.png"
-              alt="AA 1 Rosette Award 2025"
-              width={240}
-              height={240}
-              className="h-44 w-auto"
-            />
-          </div>
         </div>
       </section>
 
@@ -214,14 +174,6 @@ export default async function HomePage() {
               >
                 View Menus
               </Link>
-              <a
-                href={siteConfig.bookingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
-              >
-                Book a Room
-              </a>
             </div>
           </div>
         </div>

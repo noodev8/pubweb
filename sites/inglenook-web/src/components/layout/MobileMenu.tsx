@@ -6,19 +6,16 @@ import { usePathname } from 'next/navigation'
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Restaurant', href: '/restaurant' },
   { name: 'Menus', href: '/menus' },
   { name: 'Gallery', href: '/gallery' },
-  { name: 'Explore', href: '/explore' },
   { name: 'Contact', href: '/contact' },
 ]
 
 interface MobileMenuProps {
   venueName: string
-  bookingUrl?: string
 }
 
-export function MobileMenu({ venueName, bookingUrl }: MobileMenuProps) {
+export function MobileMenu({ venueName }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
@@ -110,19 +107,6 @@ export function MobileMenu({ venueName, bookingUrl }: MobileMenuProps) {
           </ul>
         </nav>
 
-        {/* Booking Button */}
-        {bookingUrl && (
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-stone-700">
-            <a
-              href={bookingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full py-3 text-center bg-[#7A1B1B] text-white font-medium hover:bg-[#5C1414] transition-colors"
-            >
-              Book a Room
-            </a>
-          </div>
-        )}
       </div>
     </>
   )
