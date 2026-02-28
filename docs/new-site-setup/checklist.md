@@ -70,7 +70,7 @@ VALUES (
 - [ ] Update fonts in `layout.tsx`
 - [ ] Update colour scheme in CSS/Tailwind config
 - [ ] Replace metadata — site title, description, OG tags
-- [ ] Replace favicon
+- [ ] Replace favicon — delete default `src/app/favicon.ico` and copy the standard pubweb `src/app/icon.svg` (hexagon) from an existing site
 - [ ] Replace or remove hero images and any hardcoded imagery
 
 ## 6. Cloudinary

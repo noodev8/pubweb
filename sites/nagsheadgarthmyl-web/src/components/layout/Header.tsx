@@ -24,15 +24,15 @@ export function Header({ venueName, transparent = false }: HeaderProps) {
     <header className={`${transparent ? 'absolute top-0 left-0 right-0 z-50 bg-transparent' : 'bg-stone-900'} text-white`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-24 lg:h-28 items-center justify-between">
-          {/* Logo */}
-          <div className="flex-shrink-0 mt-8">
+          {/* Logo - hidden on mobile to avoid overlapping hero text */}
+          <div className="hidden md:block flex-shrink-0 mt-8">
             <Link href="/" className="block">
               <Image
                 src="/images/logo.svg"
                 alt={venueName}
                 width={100}
                 height={100}
-                className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28"
+                className="md:w-24 md:h-24 lg:w-28 lg:h-28"
               />
             </Link>
           </div>

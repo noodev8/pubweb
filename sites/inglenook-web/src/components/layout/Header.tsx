@@ -19,15 +19,15 @@ export function Header({ venueName, transparent = false }: HeaderProps) {
     <header className={`${transparent ? 'absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/70 to-transparent' : 'bg-stone-900'} text-white`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-24 lg:h-28 items-center justify-between">
-          {/* Logo */}
-          <div className="flex-shrink-0 mt-8">
+          {/* Logo - hidden on mobile to avoid overlapping hero text */}
+          <div className="hidden md:block flex-shrink-0 mt-8">
             <Link href="/" className="block">
               <Image
                 src="/images/Inglenook-logo.png"
                 alt={venueName}
                 width={100}
                 height={100}
-                className="w-28 h-28 md:w-32 md:h-32 lg:w-40 lg:h-40"
+                className="md:w-32 md:h-32 lg:w-40 lg:h-40"
               />
             </Link>
           </div>
