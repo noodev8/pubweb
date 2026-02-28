@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Lightbox from 'yet-another-react-lightbox'
+import Zoom from 'yet-another-react-lightbox/plugins/zoom'
 import 'yet-another-react-lightbox/styles.css'
 import { Menu } from '@/types'
 import { cloudinaryLoader, optimisedUrl } from '@/lib/cloudinary'
@@ -148,6 +149,8 @@ export function MenuSelection({ menus }: MenuSelectionProps) {
         close={() => setLightboxOpen(false)}
         index={lightboxIndex}
         slides={lightboxSlides}
+        plugins={[Zoom]}
+        zoom={{ maxZoomPixelRatio: 3 }}
         styles={{
           container: { backgroundColor: 'rgba(0, 0, 0, 0.95)' },
         }}
