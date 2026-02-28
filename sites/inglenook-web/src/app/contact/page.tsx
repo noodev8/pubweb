@@ -34,7 +34,7 @@ export default async function ContactPage() {
       {/* Contact Details */}
       <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div className="grid md:grid-cols-2 gap-12">
             {/* Address */}
             <div>
               <h2 className="text-2xl font-serif text-stone-900 mb-6">
@@ -163,27 +163,6 @@ export default async function ContactPage() {
               )}
             </div>
 
-            {/* Reservations */}
-            <div>
-              <h2 className="text-2xl font-serif text-stone-900 mb-6">
-                Reservations
-              </h2>
-              <p className="text-stone-600 mb-4">
-                For restaurant reservations, please call us or send an email.
-                We recommend booking in advance, especially for weekends and
-                special occasions.
-              </p>
-              <p className="text-stone-600 mb-6">
-                For accommodation bookings, please use our online booking
-                system or contact us directly.
-              </p>
-              <a
-                href={`tel:${venue.contact.phone.replace(/\s/g, '')}`}
-                className="inline-flex items-center px-6 py-3 bg-amber-600 text-white font-medium hover:bg-amber-700 transition-colors"
-              >
-                Call to Book
-              </a>
-            </div>
           </div>
         </div>
       </section>
@@ -191,7 +170,7 @@ export default async function ContactPage() {
       {/* Map */}
       <section className="h-96 lg:h-[500px]">
         <iframe
-          src="https://www.google.com/maps?q=The+Nags+Head+Inn,+Garthmyl,+Montgomery,+Powys,+SY15+6RS&output=embed"
+          src={`https://www.google.com/maps?q=${encodeURIComponent([venue.name, venue.address.line1, venue.address.line2, venue.address.town, venue.address.county, venue.address.postcode].filter(Boolean).join(', '))}&output=embed`}
           width="100%"
           height="100%"
           style={{ border: 0 }}
