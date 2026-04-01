@@ -70,7 +70,7 @@ VALUES (
 - [ ] Update fonts in `layout.tsx`
 - [ ] Update colour scheme in CSS/Tailwind config
 - [ ] Replace metadata — site title, description, OG tags
-- [ ] Replace favicon — delete default `src/app/favicon.ico` and copy the standard pubweb `src/app/icon.svg` (hexagon) from an existing site
+- [ ] Replace favicon — delete default `src/app/favicon.ico` and copy the standard `src/app/icon.svg` (hexagon) from an existing site
 - [ ] Replace or remove hero images and any hardcoded imagery
 
 ## 6. Cloudinary
@@ -102,7 +102,7 @@ VALUES (
 
 ## Notes
 
-- The admin tool (pubweb-web) needs no changes — it already supports multiple venues
+- The admin tool (Venue Manager) needs no changes — it already supports multiple venues
 - Each site is an independent deployment with its own `VENUE_ID`
 - Content can be skipped initially and added later through the admin tool
 - Images from a previous site can be used as placeholders until real ones are ready

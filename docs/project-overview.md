@@ -1,16 +1,18 @@
-# PubWeb
+# Online Front Door
 
-Hospitality platform for pubs, inns, and restaurants. Modern websites with self-service content management.
+Website platform for local businesses — pubs, cafes, salons, trades, and more. Modern websites with self-service content management.
 
 ## Structure
 
 ```
-pubweb/
-├── nagsheadgarthmyl-web/    # The Nags Head Inn - public website (Next.js)
-├── venuemanager-express/    # Venue Manager API (Express.js) - coming soon
-├── venuemanager-web/        # Venue Manager admin UI (Next.js) - coming soon
-├── [othervenue-web/]        # Future venue sites
-└── docs/                    # Shared documentation
+onlinefrontdoor/
+├── sites/                       # Public websites (one per venue)
+│   ├── nagsheadgarthmyl-web/    # The Nags Head Inn (Next.js)
+│   ├── inglenook-web/           # The Inglenook (Next.js)
+│   └── [newvenue-web/]          # Future venue sites
+├── pubweb-server/               # API server (Express.js)
+├── pubweb-web/                  # Admin UI — Venue Manager (Next.js)
+└── docs/                        # Shared documentation
 ```
 
 ## Projects

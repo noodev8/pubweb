@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document covers the full Cloudinary cost optimisation strategy for pubweb. Cloudinary
+This document covers the full Cloudinary cost optimisation strategy for Online Front Door. Cloudinary
 bills on **three pillars**: storage, transformations, and bandwidth. Our goal is to minimise
 all three while keeping the platform robust and the admin experience simple.
 
